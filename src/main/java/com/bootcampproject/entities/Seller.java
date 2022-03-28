@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 
+
 @Data
 @Entity
 @Table(name = "Seller")

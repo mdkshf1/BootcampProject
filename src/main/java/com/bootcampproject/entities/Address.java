@@ -2,6 +2,8 @@ package com.bootcampproject.entities;
 
 
 import lombok.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.validation.constraints.Positive;
@@ -14,7 +16,6 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "Address")
 public class Address {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,4 +35,5 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 }
