@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "Role")
+@NoArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +18,9 @@ public class Role {
     private String authority;
     @ManyToMany(mappedBy = "role")
     private List<User> user;
+
+    Role(String authority)
+    {
+        this.authority=authority;
+    }
 }
