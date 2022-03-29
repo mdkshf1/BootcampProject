@@ -19,8 +19,7 @@ public class Role {
     @ManyToMany(mappedBy = "role")
     private List<User> user;
 
-    Role(String authority)
-    {
-        this.authority=authority;
+    Role(String authority) {
+        this.authority = authority;
     }
 }

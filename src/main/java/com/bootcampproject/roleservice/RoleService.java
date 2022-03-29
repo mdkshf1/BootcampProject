@@ -19,9 +19,8 @@ public class RoleService {
         role.setAuthority(authority);
         roleRepo.save(role);
     }
-    public String check(String auhtority)
-    {
-        String authority = roleRepo.chechexist(auhtority);
-        return authority;
+
+    public Long check(String authority) {
+        return roleRepo.countByAuthority(authority);
     }
 }

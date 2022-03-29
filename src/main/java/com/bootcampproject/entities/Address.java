@@ -30,10 +30,9 @@ public class Address {
     @Size(min = 6, max = 6, message = "Zip code should be of 6 digits")
     @Positive
     private Integer zipcode;
-    @Size(min =5, message = "Label should be atleast 5 characters")
+    @Size(min = 5, message = "Label should be atleast 5 characters")
     private String label;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }
