@@ -1,4 +1,4 @@
-package com.bootcampproject.roleservice;
+package com.bootcampproject.services;
 
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.repositories.RoleRepo;

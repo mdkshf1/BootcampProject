@@ -2,6 +2,7 @@ package com.bootcampproject.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
-public class User extends AuditingInfo {
+public class User extends AuditingInfo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +25,11 @@ public class User extends AuditingInfo {
     private String firstName;
     private String middleName;
     private String lastName;
-    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+/*    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")*/
     private String password;
     private boolean isDeleted = false;
-    private boolean isActive = false;
+    private boolean isActive = true;
     private boolean isExpired = false;
     private boolean isLocked = false;
     private Integer invalidAttemptCount = 0;
@@ -40,6 +41,11 @@ public class User extends AuditingInfo {
     private Customer customer;
     @OneToOne(mappedBy = "user")
     private Seller seller;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> role;
+
+    public User(User user) {
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+    }
 }
