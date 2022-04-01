@@ -59,11 +59,10 @@ public class User extends AuditingInfo{
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Set<Role> roles;
 
-/*
     public User(User user) {
         this.password = user.getPassword();
         this.email = user.getEmail();
-    }*/
+    }
 
     @Transient
     public UserTO create(UserTO userTO)
