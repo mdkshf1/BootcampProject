@@ -1,17 +1,27 @@
 package com.bootcampproject.services;
 
 import com.bootcampproject.dto.UserTO;
+import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.UserRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.bootcampproject.constants.AppConstant.*;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
+import static com.bootcampproject.constants.AppConstant.ROLE_SELLER;
+
 
 @Service
+@Slf4j
 public class UserService {
 
+    @Autowired
+    private User user;
 
     @Autowired
     private UserRepo userRepo;
@@ -19,24 +29,19 @@ public class UserService {
     @Autowired
     private RoleRepo roleRepo;
 
-    public UserTO create(UserTO userTO)
+    public UserTO createSeller(UserTO userTO)
     {
-        User user = new User();
-        UserTO user1 = new UserTO();
-        user.setEmail(userTO.getEmail());
-        user.setFirstName(userTO.getFirstName());
-        user.setMiddleName(userTO.getMiddleName());
-        user.setLastName(userTO.getLastName());
-        user.setPassword(userTO.getPassword());
-        user.setRole(roleRepo.findByAuthority(ROLE_ADMIN));
-        user.isActive();
-        user1.setEmail(userTO.getEmail());
-        user1.setFirstName(userTO.getFirstName());
-        user1.setMiddleName(userTO.getMiddleName());
-        user1.setLastName(userTO.getLastName());
-        user1.setPassword(userTO.getPassword());
-        user1.setRole(roleRepo.findByAuthority(ROLE_ADMIN));
-        userRepo.save(user);
-        return user1;
+        Role role = roleRepo.findByAuthority(ROLE_SELLER);
+        user.setRoles(Collections.singleton(role));
+        System.out.println(role);
+        return user.create(userTO);
+    }
+
+    public UserTO createCustomer(UserTO userTO)
+    {
+        Role role = roleRepo.findByAuthority(ROLE_CUSTOMER);
+        System.out.println(role);
+        user.setRoles(Collections.singleton(role));
+        return user.create(userTO);
     }
 }

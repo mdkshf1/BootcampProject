@@ -16,7 +16,7 @@ public class Role {
     private Long id;
     @Column(unique = true)
     private String authority;
-    @ManyToMany(mappedBy = "role")
+    @ManyToMany(mappedBy = "roles")
     private List<User> user;
 
     Role(String authority) {

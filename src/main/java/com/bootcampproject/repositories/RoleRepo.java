@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface RoleRepo extends JpaRepository<Role, Long> {
     Long countByAuthority(String authority);
-    List<Role> findByAuthority(String authority);
+    Role findByAuthority(String authority);
 }

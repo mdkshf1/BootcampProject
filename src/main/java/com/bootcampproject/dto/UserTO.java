@@ -1,8 +1,10 @@
 package com.bootcampproject.dto;
 
 import com.bootcampproject.entities.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -23,5 +25,6 @@ public class UserTO {
         @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")*/
     private String password;
     private String confirmPassword;
-    private List<Role> role;
+    @JsonIgnore
+    private List<Role> roles;
 }

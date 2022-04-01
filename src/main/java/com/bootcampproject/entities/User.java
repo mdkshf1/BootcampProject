@@ -1,20 +1,35 @@
 package com.bootcampproject.entities;
 
+import com.bootcampproject.dto.UserTO;
+import com.bootcampproject.repositories.UserRepo;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
+@Component
 public class User extends AuditingInfo{
+
+
+    @Transient
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Transient
+    @Autowired
+    private UserRepo userRepo;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,11 +56,32 @@ public class User extends AuditingInfo{
     private Customer customer;
     @OneToOne(mappedBy = "user")
     private Seller seller;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> role;
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private Set<Role> roles;
 
+/*
     public User(User user) {
         this.password = user.getPassword();
         this.email = user.getEmail();
+    }*/
+
+    @Transient
+    public UserTO create(UserTO userTO)
+    {
+        User user = new User();
+        user.setEmail(userTO.getEmail());
+        user.setFirstName(userTO.getFirstName());
+        user.setMiddleName(userTO.getMiddleName());
+        user.setLastName(userTO.getLastName());
+        user.setPassword(passwordEncoder.encode(userTO.getPassword()));
+        user.setActive(false);
+        user.setDeleted(false);
+        user.setExpired(false);
+        user.setLocked(true);
+        user.setInvalidAttemptCount(0);
+        userRepo.save(user);
+        System.out.println(user);
+        return userTO;
     }
+
 }

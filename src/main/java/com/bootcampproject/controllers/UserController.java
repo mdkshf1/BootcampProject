@@ -1,3 +1,4 @@
+/*
 package com.bootcampproject.controllers;
 
 
@@ -9,16 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
 
-    @PostMapping("/register")
     public UserTO create(@Valid @RequestBody UserTO userTO)
     {
         return userService.create(userTO);
     }
 }
+*/
