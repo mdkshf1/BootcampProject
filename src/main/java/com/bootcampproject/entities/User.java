@@ -5,11 +5,13 @@ import com.bootcampproject.repositories.UserRepo;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,16 +21,7 @@ import java.util.Set;
 @Table(name = "User")
 @NoArgsConstructor
 @Component
-public class User extends AuditingInfo{
-
-
-    @Transient
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Transient
-    @Autowired
-    private UserRepo userRepo;
+public class User extends AuditingInfo implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,30 +50,48 @@ public class User extends AuditingInfo{
     @OneToOne(mappedBy = "user")
     private Seller seller;
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "roleId",referencedColumnName = "id"))
     private Set<Role> roles;
+
+    @Transient
+    private List<GrantedAuthority> grantedAuthorities;
 
     public User(User user) {
         this.password = user.getPassword();
         this.email = user.getEmail();
     }
 
-    @Transient
-    public UserTO create(UserTO userTO)
-    {
-        User user = new User();
-        user.setEmail(userTO.getEmail());
-        user.setFirstName(userTO.getFirstName());
-        user.setMiddleName(userTO.getMiddleName());
-        user.setLastName(userTO.getLastName());
-        user.setPassword(passwordEncoder.encode(userTO.getPassword()));
-        user.setActive(false);
-        user.setDeleted(false);
-        user.setExpired(false);
-        user.setLocked(true);
-        user.setInvalidAttemptCount(0);
-        userRepo.save(user);
-        System.out.println(user);
-        return userTO;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return grantedAuthorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

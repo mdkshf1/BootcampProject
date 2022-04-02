@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
@@ -32,7 +34,8 @@ public class UserService {
     public UserTO createSeller(UserTO userTO)
     {
         Role role = roleRepo.findByAuthority(ROLE_SELLER);
-        user.setRoles(Collections.singleton(role));
+/*        user.setRoles(Collections.singleton(role));*/
+        userTO.setRoles(Collections.singleton(role));
         System.out.println(role);
         return user.create(userTO);
     }
@@ -41,7 +44,11 @@ public class UserService {
     {
         Role role = roleRepo.findByAuthority(ROLE_CUSTOMER);
         System.out.println(role);
-        user.setRoles(Collections.singleton(role));
+        Set<Role> set = new HashSet<>();
+        set.add(role);
+        user.setRoles(set);
+        System.out.println(set);
+        /*user.setRoles(Collections.singleton(role));*/
         return user.create(userTO);
     }
 }
