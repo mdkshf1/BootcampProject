@@ -7,6 +7,7 @@ import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
@@ -30,12 +31,23 @@ public class UserService {
     @Autowired
     private RoleRepo roleRepo;
 
+    @Autowired
+    private MailService mailService;
+
 
     public UserTO createSeller(UserTO userTO)
     {
         Role role = roleRepo.findByAuthority(ROLE_SELLER);
         userTO.setRoles(Collections.singleton(role));
         User user = UserTO.mapper(userTO);
+        try
+        {
+            mailService.sendMail(user);
+            log.info("mail sent");
+        }catch (MailException e)
+        {
+            log.info("Error in mail sending");
+        }
         userRepo.save(user);
         return userTO;
     }
