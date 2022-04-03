@@ -1,19 +1,25 @@
 package com.bootcampproject.entities;
 
+import com.bootcampproject.dto.UserTO;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
-public class User extends AuditingInfo {
+@Component
+public class User extends AuditingInfo implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +30,11 @@ public class User extends AuditingInfo {
     private String firstName;
     private String middleName;
     private String lastName;
-    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+/*    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")*/
     private String password;
     private boolean isDeleted = false;
-    private boolean isActive = false;
+    private boolean isActive = true;
     private boolean isExpired = false;
     private boolean isLocked = false;
     private Integer invalidAttemptCount = 0;
@@ -40,6 +46,62 @@ public class User extends AuditingInfo {
     private Customer customer;
     @OneToOne(mappedBy = "user")
     private Seller seller;
-    @ManyToMany
-    private List<Role> role;
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private Set<Role> roles;
+
+    @Transient
+    private List<GrantedAuthority> grantedAuthorities;
+
+    public User(User user) {
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return grantedAuthorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    public static User create(UserTO userTO)
+    {
+        User user = new User();
+        user.setEmail(userTO.getEmail());
+        user.setPassword(userTO.getPassword());
+        user.setFirstName(userTO.getFirstName());
+        user.setMiddleName(userTO.getMiddleName());
+        user.setLastName(userTO.getLastName());
+        user.setDeleted(false);
+        user.setLocked(true);
+        user.setExpired(false);
+        user.setInvalidAttemptCount(0);
+        user.setRoles(userTO.getRoles());
+        return user;
+    }
+
 }
