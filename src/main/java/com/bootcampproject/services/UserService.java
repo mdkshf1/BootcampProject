@@ -7,6 +7,7 @@ import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +21,8 @@ import static com.bootcampproject.constants.AppConstant.ROLE_SELLER;
 @Slf4j
 public class UserService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepo userRepo;
@@ -42,6 +45,7 @@ public class UserService {
         Role role = roleRepo.findByAuthority(ROLE_CUSTOMER);
         userTO.setRoles(Collections.singleton(role));
         User user = UserTO.mapper(userTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
         return userTO;
     }
