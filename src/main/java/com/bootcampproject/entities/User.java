@@ -1,13 +1,10 @@
 package com.bootcampproject.entities;
 
 import com.bootcampproject.dto.UserTO;
-import com.bootcampproject.repositories.UserRepo;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
@@ -50,8 +47,6 @@ public class User extends AuditingInfo implements UserDetails {
     @OneToOne(mappedBy = "user")
     private Seller seller;
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "userid", referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "roleId",referencedColumnName = "id"))
     private Set<Role> roles;
 
     @Transient
@@ -61,8 +56,6 @@ public class User extends AuditingInfo implements UserDetails {
         this.password = user.getPassword();
         this.email = user.getEmail();
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,6 +85,23 @@ public class User extends AuditingInfo implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    public static User create(UserTO userTO)
+    {
+        User user = new User();
+        user.setEmail(userTO.getEmail());
+        user.setPassword(userTO.getPassword());
+        user.setFirstName(userTO.getFirstName());
+        user.setMiddleName(userTO.getMiddleName());
+        user.setLastName(userTO.getLastName());
+        user.setDeleted(false);
+        user.setLocked(true);
+        user.setExpired(false);
+        user.setInvalidAttemptCount(0);
+        user.setRoles(userTO.getRoles());
+        return user;
     }
 
 }
