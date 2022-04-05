@@ -1,5 +1,6 @@
 package com.bootcampproject.entities;
 
+import com.bootcampproject.dto.SellerTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,4 +24,14 @@ public class Seller extends AuditingInfo {
     @OneToOne
     @MapsId
     private User user;
+
+    public static Seller setDetails(SellerTO sellerTO,User user)
+    {
+        Seller seller = new Seller();
+        seller.setCompanyName(sellerTO.getCompanyName());
+        seller.setCompanyContact(sellerTO.getCompanyContact());
+        seller.setGst(sellerTO.getGst());
+        seller.setUser(user);
+        return seller;
+    }
 }

@@ -1,5 +1,6 @@
 package com.bootcampproject.services;
 
+import com.bootcampproject.dto.SellerTO;
 import com.bootcampproject.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class MailService {
+public class ActivationMailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
 
+
     @Autowired
-    public MailService(JavaMailSender javaMailSender)
+    public ActivationMailService(JavaMailSender javaMailSender)
     {
         this.javaMailSender = javaMailSender;
     }
@@ -24,10 +26,12 @@ public class MailService {
     public void sendMail(User user) throws MailException
     {
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo("heena.dhamija@tothenew.com");
-        mail.setFrom("mohd.kashif@tothenew.com");
-        mail.setSubject("This is to check whether mail are sending or not");
-        mail.setText("have you got the mail??");
+        String link = "http://localhost:8080/activate/"+user.getUuid();
+        log.info("Your link is "+ link);
+        mail.setTo(user.getEmail());
+        mail.setFrom("mohdkashif1108@gmail.com");
+        mail.setSubject("This is to unlock your account");
+        mail.setText(link);
         log.info("in service sending mail");
         javaMailSender.send(mail);
     }

@@ -2,31 +2,29 @@ package com.bootcampproject.entities;
 
 import com.bootcampproject.dto.UserTO;
 import lombok.*;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 @Entity
-@Table(name = "User")
+@Table(name = "User",uniqueConstraints = @UniqueConstraint(columnNames = {"id","email"}))
 @NoArgsConstructor
-@Component
 public class User extends AuditingInfo implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
     private String email;
     @NonNull
+    @Column(nullable = false)
     private String firstName;
     private String middleName;
     private String lastName;
@@ -38,7 +36,10 @@ public class User extends AuditingInfo implements UserDetails {
     private boolean isExpired = false;
     private boolean isLocked = false;
     private Integer invalidAttemptCount = 0;
-    @LastModifiedDate
+
+    @Column(columnDefinition = "Binary(32)")
+    private String uuid;
+    //manually change krna hai
     private Date passwordUpdateDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> address;
@@ -101,7 +102,8 @@ public class User extends AuditingInfo implements UserDetails {
         user.setExpired(false);
         user.setInvalidAttemptCount(0);
         user.setRoles(userTO.getRoles());
+        user.setUuid(UUID.randomUUID().toString());
+        System.out.println(user.getUuid());
         return user;
     }
-
 }

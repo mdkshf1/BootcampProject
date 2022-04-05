@@ -6,7 +6,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "Role")
 @NoArgsConstructor
