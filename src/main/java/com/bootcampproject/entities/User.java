@@ -2,6 +2,7 @@ package com.bootcampproject.entities;
 
 import com.bootcampproject.dto.UserTO;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
@@ -11,10 +12,10 @@ import java.util.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
 @Entity
 @Table(name = "User",uniqueConstraints = @UniqueConstraint(columnNames = {"id","email"}))
 @NoArgsConstructor
+@Slf4j
 public class User extends AuditingInfo implements UserDetails {
 
     @Id
@@ -36,9 +37,6 @@ public class User extends AuditingInfo implements UserDetails {
     private boolean isExpired = false;
     private boolean isLocked = false;
     private Integer invalidAttemptCount = 0;
-
-    @Column(columnDefinition = "Binary(32)")
-    private String uuid;
     //manually change krna hai
     private Date passwordUpdateDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -91,19 +89,22 @@ public class User extends AuditingInfo implements UserDetails {
 
     public static User create(UserTO userTO)
     {
+        System.out.println(userTO);
+        log.info("inside user entity");
         User user = new User();
         user.setEmail(userTO.getEmail());
         user.setPassword(userTO.getPassword());
+        log.info("first name");
         user.setFirstName(userTO.getFirstName());
         user.setMiddleName(userTO.getMiddleName());
         user.setLastName(userTO.getLastName());
+        user.setActive(false);
         user.setDeleted(false);
-        user.setLocked(true);
+        user.setLocked(false);
         user.setExpired(false);
         user.setInvalidAttemptCount(0);
         user.setRoles(userTO.getRoles());
-        user.setUuid(UUID.randomUUID().toString());
-        System.out.println(user.getUuid());
+/*        user.setAddress(userTO.getAddressList());*/
         return user;
     }
 }

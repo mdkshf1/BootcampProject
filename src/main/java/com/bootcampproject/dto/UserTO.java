@@ -1,6 +1,8 @@
 package com.bootcampproject.dto;
 
+import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Role;
+import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.repositories.UserRepo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,11 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,19 +46,13 @@ public class UserTO {
     private String password;
     @NotNull
     private String confirmPassword;
+    @JsonIgnore
+    @OneToOne(mappedBy = "user")
+    private Seller seller;
 
     @JsonIgnore
     private Set<Role> roles;
 
+    private List<Address> addressList;
 
-    public static User mapper(UserTO userTO) {
-        UserTO userto = new UserTO();
-        userto.setEmail(userTO.getEmail());
-        userto.setPassword(userTO.getPassword());
-        userto.setFirstName(userTO.getFirstName());
-        userto.setMiddleName(userTO.getMiddleName());
-        userto.setLastName(userTO.getLastName());
-        userto.setRoles(userTO.getRoles());
-        return User.create(userto);
-    }
 }

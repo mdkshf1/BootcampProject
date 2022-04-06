@@ -1,5 +1,6 @@
 package com.bootcampproject.dto;
 
+import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,8 +18,6 @@ import javax.validation.constraints.Size;
 @Data
 public class SellerTO extends UserTO {
 
-    @Email
-    private String email;
     @Id
     private Long id;
     @Column(unique = true)
@@ -28,10 +27,8 @@ public class SellerTO extends UserTO {
     private Long companyContact;
     @Column(unique = true)
     private String companyName;
-    @JsonIgnore
-    @OneToOne
-    @MapsId
-    private User user;
+
+    private Address address;
 
     public static Seller mapper(SellerTO sellerTO,User user)
     {
@@ -39,6 +36,15 @@ public class SellerTO extends UserTO {
         seller.setCompanyName(sellerTO.getCompanyName());
         seller.setCompanyContact(sellerTO.getCompanyContact());
         seller.setGst(sellerTO.getGst());
+        Address address= sellerTO.getAddress();
+        Address sellerAddress = new Address();
+        sellerAddress.setCity(address.getCity());
+        sellerAddress.setState(address.getState());
+        sellerAddress.setCountry(address.getCountry());
+        sellerAddress.setAddressLine(address.getAddressLine());
+        sellerAddress.setLabel(address.getLabel());
+        sellerAddress.setZipCode(address.getZipCode());
+        sellerAddress.setUser(user);
         seller.setUser(user);
         return seller;
     }

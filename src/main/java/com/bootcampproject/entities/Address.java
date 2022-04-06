@@ -1,6 +1,7 @@
 package com.bootcampproject.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import javax.validation.constraints.Size;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "Address")
 public class Address {
@@ -26,13 +28,17 @@ public class Address {
     @Size(min = 2, message = "minimum you can enter your country code having two characters")
     private String country;
     @Size(min = 2, message = "minimum characters to enter is 2")
-    private String address_line;
-    @Size(min = 6, max = 6, message = "Zip code should be of 6 digits")
+    private String addressLine;
+  /*  @Size(min = 6, max = 6, message = "Zip code should be of 6 digits")*/
     @Positive
-    private Integer zipcode;
+    private Integer zipCode;
     @Size(min = 5, message = "Label should be atleast 5 characters")
     private String label;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+/*    @ManyToOne
+    @JoinColumn(name="user_id")
+    private Customer customer;*/
 }

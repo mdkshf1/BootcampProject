@@ -1,12 +1,13 @@
 package com.bootcampproject.services;
 
-
-import com.bootcampproject.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @Slf4j
@@ -21,13 +22,25 @@ public class SimpleMailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendMail(User user)
+    public void sendMail(String to,String subject,String text)
     {
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(user.getEmail());
-        mail.setFrom("mohdkashif1108@gmail.com");
-        mail.setSubject("This is to inform that your account has been activated");
-        mail.setText("Your account has been activated and now you can enjoy our service freely");
-        javaMailSender.send(mail);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SimpleMailMessage mail = new SimpleMailMessage();
+                    mail.setTo(to);
+                    mail.setFrom("mohdkashif1108@gmail.com");
+                    mail.setSubject(subject);
+                    mail.setText(text);
+                    javaMailSender.send(mail);
+                    log.info("mail sent");
+                } catch (MailException e) {
+                    log.info("Error in mail sending");
+                }
+            }
+        });
     }
 }

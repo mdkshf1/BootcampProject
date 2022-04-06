@@ -8,7 +8,9 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity
 @Table(name = "Seller")
 public class Seller extends AuditingInfo {
@@ -25,13 +27,12 @@ public class Seller extends AuditingInfo {
     @MapsId
     private User user;
 
-    public static Seller setDetails(SellerTO sellerTO,User user)
+    public static Seller setDetails(SellerTO sellerTO)
     {
         Seller seller = new Seller();
         seller.setCompanyName(sellerTO.getCompanyName());
         seller.setCompanyContact(sellerTO.getCompanyContact());
         seller.setGst(sellerTO.getGst());
-        seller.setUser(user);
         return seller;
     }
 }
