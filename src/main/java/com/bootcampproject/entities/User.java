@@ -3,6 +3,7 @@ package com.bootcampproject.entities;
 import com.bootcampproject.dto.UserTO;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.*;
 @Table(name = "User",uniqueConstraints = @UniqueConstraint(columnNames = {"id","email"}))
 @NoArgsConstructor
 @Slf4j
+@EntityListeners(AuditingInfo.class)
 public class User extends AuditingInfo implements UserDetails {
 
     @Id
@@ -29,8 +31,6 @@ public class User extends AuditingInfo implements UserDetails {
     private String firstName;
     private String middleName;
     private String lastName;
-/*    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")*/
     private String password;
     private boolean isDeleted = false;
     private boolean isActive = true;
@@ -50,6 +50,11 @@ public class User extends AuditingInfo implements UserDetails {
 
     @Transient
     private List<GrantedAuthority> grantedAuthorities;
+
+    private String forgotPasswordToken;
+
+    private Date forgotPasswordAt;
+
 
     public User(User user) {
         this.password = user.getPassword();
@@ -90,11 +95,9 @@ public class User extends AuditingInfo implements UserDetails {
     public static User create(UserTO userTO)
     {
         System.out.println(userTO);
-        log.info("inside user entity");
         User user = new User();
         user.setEmail(userTO.getEmail());
         user.setPassword(userTO.getPassword());
-        log.info("first name");
         user.setFirstName(userTO.getFirstName());
         user.setMiddleName(userTO.getMiddleName());
         user.setLastName(userTO.getLastName());
@@ -104,7 +107,8 @@ public class User extends AuditingInfo implements UserDetails {
         user.setExpired(false);
         user.setInvalidAttemptCount(0);
         user.setRoles(userTO.getRoles());
-/*        user.setAddress(userTO.getAddressList());*/
+        user.setForgotPasswordToken(UUID.randomUUID().toString());
+        System.out.println("inside user "+user);
         return user;
     }
 }

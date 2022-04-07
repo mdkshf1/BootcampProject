@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static org.bouncycastle.cms.RecipientId.password;
 
 @RestController
 @Slf4j
@@ -80,11 +83,10 @@ public class PublicController {
             return new ResponseEntity<String>(result.getAllErrors().stream().map(objectError -> {return objectError.getDefaultMessage();}).collect(Collectors.joining("\n")), HttpStatus.EXPECTATION_FAILED);
         }
         try {
-
             if (!Objects.equals(customerTO.getPassword(), customerTO.getConfirmPassword())) {
                 return new ResponseEntity<String>("Password does not match", HttpStatus.BAD_REQUEST);
             }
-               CustomerTO customer = customerService.createCustomer(customerTO);
+            CustomerTO customer = customerService.createCustomer(customerTO);
             System.out.println(customer);
             return new ResponseEntity<CustomerTO>(customer, HttpStatus.OK);
         }
@@ -99,42 +101,23 @@ public class PublicController {
         }
     }
 
-
-    //refacottor
-    @GetMapping("/activate/{uuid}")
-    public ResponseEntity<?> activateUser( @PathVariable("uuid") String uuid) {
-        log.info("activation happened");
-        System.out.println(uuid);
-        Customer customer = customerService.findCustomerByToken(uuid);
+    @GetMapping("/activate/{token}")
+    public ResponseEntity<?> activateUser( @PathVariable("token") String token) {
+        Customer customer = customerService.findCustomerByToken(token);
         if(customer==null)
         {
             log.info("activation failed");
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
-/*        log.info(String.valueOf(user.getUuid()));*/
         log.info("uuid of user found "+customer.getActivationToken());
-        Date date1 = customer.getActivationTokenAt();
-        Date date2= new Date();
-        Long time = date2.getTime()-date1.getTime();
-        long diffSeconds = time / 1000 % 60;
-        long diffMinutes = time / (60 * 1000) % 60;
-        log.info("time difference "+ time);
-        log.info("time in seconds "+ diffSeconds);
-        log.info("time in minutes "+ diffMinutes);
-/*        if (!Objects.equals(customer.getActivationToken(),uuid))
-        *//*if (!user.getUuid().equals(uuid))*//*
+        Long diffMinutes =  customerService.findTime(customer.getActivationTokenAt(),new Date());
+        if(diffMinutes>duration)
         {
-            log.info("activation failed due to mismatch of uuid");
-            return new ResponseEntity<String>("UUID NOT MATCHED",HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
-        log.info("activation performed");
-        if(diffSeconds>duration)
-        {
+            customerService.reactivateCustomer(customer);
             return new ResponseEntity<String>("Time over for activation please check mail again",HttpStatus.FORBIDDEN);
         }
         User user = userService.findUserById(customer.getId());
         userService.activateUser(user);
-/*        userService.mailUser(user);*/
         return new ResponseEntity<String>("Account Activated", HttpStatus.OK);
     }
     @GetMapping("/i18n")
@@ -142,5 +125,29 @@ public class PublicController {
     {
         return messageSource.getMessage("good.morning.message",null, LocaleContextHolder.getLocale());
 
+    }
+
+    @GetMapping("/forgot-password/{email}")
+    public ResponseEntity<?> forgotPassword(@PathVariable("email") String email)
+    {
+        User user = userService.checkUser(email);
+        if(user == null)
+        {
+            return new ResponseEntity<String>("User not found with this email",HttpStatus.BAD_REQUEST);
+        }
+        userService.forgotPassword(user);
+        return new ResponseEntity<String>("Please check you Email to change your password",HttpStatus.OK);
+    }
+    @PutMapping("/change-password/{token}")
+    public ResponseEntity<?> changePassword(@PathVariable("token") String token,@Valid @RequestBody User user)
+    {
+        User gotuser = userService.findUserByToken(token);
+        if(gotuser == null)
+        {
+            return new ResponseEntity<String>("Token does not match please check the link and try again",HttpStatus.BAD_REQUEST);
+        }
+        String password = user.getPassword();
+        user = userService.changePassword(gotuser,password);
+        return new ResponseEntity<String>("Password changed Successfully",HttpStatus.OK);
     }
 }

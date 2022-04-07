@@ -39,6 +39,9 @@ public class SellerService {
     @Autowired
     private AddressRepo addressRepo;
 
+    @Autowired
+    private CustomerService customerService;
+
 
 
     public SellerTO createSeller(SellerTO sellerTO)
@@ -54,15 +57,14 @@ public class SellerService {
         user = User.create(sellerTO);
         System.out.println(user);
         Address address = sellerTO.getAddress();
-/*        Seller seller = Seller.setDetails(sellerTO);*/
         Seller seller =SellerTO.mapper(sellerTO,user);
         address.setUser(user);
         seller.setUser(user);
         user.setSeller(seller);
         System.out.println(seller);
+        customerService.commonMail();
         sellerRepo.save(seller);
         addressRepo.save(address);
         return sellerTO;
-
     }
 }

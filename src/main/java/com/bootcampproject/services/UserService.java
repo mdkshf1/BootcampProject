@@ -50,9 +50,6 @@ public class UserService {
         return userRepo.findByEmail(email);
     }
 
-    public String checkUserByUuid(String uuid) {
-        return userRepo.findMail(uuid);
-    }
 
     public User findUserById(Long id) {
         return userRepo.getById(id);
@@ -65,4 +62,25 @@ public class UserService {
         return user;
     }
 
+    public void forgotPassword(User user)
+    {
+        user.setForgotPasswordToken(UUID.randomUUID().toString());
+        log.info("new token "+user.getForgotPasswordToken());
+        user.setForgotPasswordAt(new Date());
+        String subject = "Please click on the link to change your password";
+        String text = "http://localhost:8080/changepassword/"+user.getForgotPasswordToken();
+        log.info("Forgot password link "+text);
+        simpleMailService.sendMail(user.getEmail(),subject,text);
+        userRepo.save(user);
+    }
+
+    public User findUserByToken(String token)
+    {
+        return userRepo.findByForgotPasswordToken(token);
+    }
+    public User changePassword(User user,String password)
+    {
+        user.setPassword(password);
+        return userRepo.save(user);
+    }
 }

@@ -13,4 +13,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     User findByEmail(String email);
    @Query(value = "Select email from user where uuid =:uuid", nativeQuery = true)
     String findMail(@Param("uuid") String uuid);
+    User findByForgotPasswordToken(String token);
 }

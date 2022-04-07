@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -36,13 +33,13 @@ public class UserTO {
     @NotNull
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",message = "Enter mail in correct format or invalid mail")
     private String email;
-    @NotNull
+    @NotBlank
     private String firstName;
     private String middleName;
     private String lastName;
     @NotNull
-    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters with atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
-      /*  @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")*/
+    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
     private String password;
     @NotNull
     private String confirmPassword;
