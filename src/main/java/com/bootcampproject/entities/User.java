@@ -17,7 +17,6 @@ import java.util.*;
 @Table(name = "User",uniqueConstraints = @UniqueConstraint(columnNames = {"id","email"}))
 @NoArgsConstructor
 @Slf4j
-@EntityListeners(AuditingInfo.class)
 public class User extends AuditingInfo implements UserDetails {
 
     @Id

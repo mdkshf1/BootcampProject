@@ -1,8 +1,6 @@
 package com.bootcampproject.entities;
 
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -12,7 +10,6 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "Customer")
-@EntityListeners(AuditingEntityListener.class)
 public class Customer extends AuditingInfo {
 
     @Id

@@ -11,7 +11,6 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "Seller")
-@EntityListeners(AuditingEntityListener.class)
 public class Seller extends AuditingInfo {
     @Id
     private Long id;
