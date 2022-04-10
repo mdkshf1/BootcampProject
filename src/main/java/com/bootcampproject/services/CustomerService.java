@@ -12,6 +12,7 @@ import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +23,9 @@ import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
 @Service
 @Slf4j
 public class CustomerService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepo userRepo;
@@ -57,6 +61,7 @@ public class CustomerService {
         customerTO.setRoles(Collections.singleton(role));
         log.info("ROLE SET");
         user = User.create(customerTO);
+        user.setPassword(passwordEncoder.encode(customerTO.getPassword()));
         System.out.println(user);
         log.info("calling customer from customer TO");
         Customer customer = CustomerTO.createCustomer(customerTO);

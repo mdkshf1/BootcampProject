@@ -46,7 +46,8 @@ public class UserService {
 
 
 
-    public User checkUser(String email) {
+    //rename findbyEmail
+    public User findByEmail(String email) {
         return userRepo.findByEmail(email);
     }
 

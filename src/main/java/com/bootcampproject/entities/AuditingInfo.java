@@ -32,4 +32,5 @@ public abstract class AuditingInfo {
 
     @LastModifiedBy
     private String updatedBy;
+
 }

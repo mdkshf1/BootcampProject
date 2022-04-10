@@ -130,7 +130,7 @@ public class PublicController {
     @GetMapping("/forgot-password/{email}")
     public ResponseEntity<?> forgotPassword(@PathVariable("email") String email)
     {
-        User user = userService.checkUser(email);
+        User user = userService.findByEmail(email);
         if(user == null)
         {
             return new ResponseEntity<String>("User not found with this email",HttpStatus.BAD_REQUEST);

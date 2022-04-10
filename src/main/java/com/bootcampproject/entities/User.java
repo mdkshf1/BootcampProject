@@ -96,7 +96,6 @@ public class User extends AuditingInfo implements UserDetails {
         System.out.println(userTO);
         User user = new User();
         user.setEmail(userTO.getEmail());
-        user.setPassword(userTO.getPassword());
         user.setFirstName(userTO.getFirstName());
         user.setMiddleName(userTO.getMiddleName());
         user.setLastName(userTO.getLastName());

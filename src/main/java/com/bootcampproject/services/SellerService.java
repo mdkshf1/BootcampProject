@@ -15,6 +15,7 @@ import com.bootcampproject.repositories.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
@@ -26,6 +27,9 @@ import static com.bootcampproject.constants.AppConstant.ROLE_SELLER;
 @Service
 @Slf4j
 public class SellerService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private SellerRepo sellerRepo;
@@ -55,6 +59,7 @@ public class SellerService {
         sellerTO.setRoles(Collections.singleton(role));
         log.info("ROLE SET");
         user = User.create(sellerTO);
+        user.setPassword(passwordEncoder.encode(sellerTO.getPassword()));
         System.out.println(user);
         Address address = sellerTO.getAddress();
         Seller seller =SellerTO.mapper(sellerTO,user);
