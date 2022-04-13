@@ -2,9 +2,11 @@ package com.bootcampproject.controllers;
 
 import com.bootcampproject.dto.CustomerTO;
 import com.bootcampproject.dto.SellerTO;
+import com.bootcampproject.dto.UserTO;
 import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
+import com.bootcampproject.services.AdminService;
 import com.bootcampproject.services.CustomerService;
 import com.bootcampproject.services.SellerService;
 import com.bootcampproject.services.UserService;
@@ -20,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.bouncycastle.cms.RecipientId.password;
 
 @RestController
 @Slf4j
@@ -34,6 +33,9 @@ public class PublicController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AdminService adminService;
 
     @Autowired
     private CustomerService customerService;
@@ -63,7 +65,7 @@ public class PublicController {
         }
         catch(UserAlreadyExistException e) {
             log.error(e.getMessage(), e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e)
         {
@@ -72,6 +74,34 @@ public class PublicController {
         }
     }
 
+    @PostMapping("register/admin")
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody UserTO userTO, BindingResult result)
+    {
+        if (result.hasErrors())
+        {
+            String error = result.getAllErrors().stream().map(objectError -> {return objectError.getDefaultMessage();}).collect(Collectors.joining("\n"));
+            log.warn("Validation failed: "+error);
+            return new ResponseEntity<String>(result.getAllErrors().stream().map(objectError -> {return objectError.getDefaultMessage();}).collect(Collectors.joining("\n")), HttpStatus.EXPECTATION_FAILED);
+        }
+        try {
+            if (!Objects.equals(userTO.getPassword(), userTO.getConfirmPassword())) {
+                return new ResponseEntity<String>("Password does not match", HttpStatus.BAD_REQUEST);
+            }
+            User user1 = adminService.createAdmin(userTO);
+            System.out.println(user1);
+            return new ResponseEntity<String>("Admin created", HttpStatus.OK);
+        }
+        catch (UserAlreadyExistException e)
+        {
+            log.error(e.getMessage(),e);
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception e)
+        {
+            log.error("Exception occured while creating admin");
+            return new ResponseEntity<String>("Error occured while saving Admin",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping("/register/customer")
     public ResponseEntity<?> createCustomer(@Valid @RequestBody CustomerTO customerTO,BindingResult result)

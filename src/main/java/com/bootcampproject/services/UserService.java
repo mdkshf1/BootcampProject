@@ -60,6 +60,19 @@ public class UserService {
         user.setActive(true);
         userRepo.save(user);
         System.out.println(user);
+        String subject = "This is to notify that your account has been activated";
+        String text = "As your account has been activated now you can enjoy our service as per criteria";
+        simpleMailService.sendMail(user.getEmail(),subject,text);
+        return user;
+    }
+
+    public User deactivateUser(User user) {
+        user.setActive(false);
+        userRepo.save(user);
+        System.out.println(user);
+        String subject = "This is to notify that your account has been deactivated";
+        String text = "As your account has been deactivated now you cannot enjoy our service as per criteria";
+        simpleMailService.sendMail(user.getEmail(),subject,text);
         return user;
     }
 
@@ -79,9 +92,13 @@ public class UserService {
     {
         return userRepo.findByForgotPasswordToken(token);
     }
+
     public User changePassword(User user,String password)
     {
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
+        String subject = "Your Password has been updated";
+        String body = "As your password has been updated now you can login with your new password";
+        simpleMailService.sendMail(user.getEmail(),subject,body);
         return userRepo.save(user);
     }
 }

@@ -3,6 +3,7 @@ package com.bootcampproject.entities;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "Customer")
-public class Customer extends AuditingInfo {
+public class Customer extends AuditingInfo implements Serializable {
 
     @Id
     private Long id;

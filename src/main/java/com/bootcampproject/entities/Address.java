@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Size(min = 2, message = "minimum you can enter is your city code having two characters")
     private String city;
     @Size(min = 2, message = "minimum you can enter is your state code having two characters")

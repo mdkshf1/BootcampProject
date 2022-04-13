@@ -1,21 +1,23 @@
 package com.bootcampproject.services;
 
+
+import com.bootcampproject.dto.CustomerResponseTO;
 import com.bootcampproject.dto.CustomerTO;
 import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.User;
+import com.bootcampproject.exceptions.CannotChangeException;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
 import com.bootcampproject.repositories.AddressRepo;
 import com.bootcampproject.repositories.CustomerRepo;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.UserRepo;
+import com.bootcampproject.utils.SecurityContextHolderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
@@ -49,7 +51,6 @@ public class CustomerService {
     {
         return customerRepo.findByActivationToken(token);
     }
-
 
     public CustomerTO createCustomer(CustomerTO customerTO)
     {
@@ -112,4 +113,88 @@ public class CustomerService {
         sendmail(user.getEmail(),token);
     }
 
+    public CustomerResponseTO getDetails()
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        return CustomerResponseTO.mapper(user);
+    }
+
+    public List<Address> getAddressDetails()
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        List<Address> address = user.getAddress();
+        return address;
+    }
+    public void updateDetails(CustomerTO customerTO)
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        if (user.getEmail() != customerTO.getEmail())
+            throw new CannotChangeException("You cannot change email");
+        if (customerTO.getPassword() != null)
+            throw new CannotChangeException("You cannot change Password\nTo change please hit /changePassword API");
+        if (customerTO.getFirstName() != null)
+            user.setFirstName(customerTO.getFirstName());
+        if (customerTO.getMiddleName() != null)
+            user.setMiddleName(customerTO.getMiddleName());
+        if (customerTO.getLastName() !=null)
+            user.setLastName(customerTO.getLastName());
+        Customer customer = user.getCustomer();
+        customer.setContact(customerTO.getContact());
+        userRepo.save(user);
+        customerRepo.save(customer);
+    }
+
+    public void addAddress(Address address)
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        List<Address> addressList = user.getAddress();
+        addressList.add(address);
+        user.setAddress(addressList);
+        userRepo.save(user);
+    }
+    public Integer deleteAddress(Long id)
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        List<Address> addressList = user.getAddress();
+        for (Address address:addressList) {
+            if (address.getId() != id)
+                return 0;
+        }
+        addressList.removeIf(address -> address.getId()==id);
+        user.setAddress(addressList);
+        userRepo.save(user);
+        return 1;
+    }
+
+
+    //change in address update
+    public Integer updateAddress(Long id,Address address)
+    {
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        User user = userService.findByEmail(email);
+        List<Address> addressList = user.getAddress();
+        for (Address address1:addressList) {
+            if (address1.getId() == id) {
+                if (address.getCity() != null)
+                    address1.setCity(address.getCity());
+                if (address.getState() != null)
+                    address1.setState(address.getState());
+                if (address.getCountry() != null)
+                    address1.setCountry(address.getCountry());
+                if (address.getAddressLine() != null)
+                    address1.setAddressLine(address.getAddressLine());
+                if (address.getZipCode() != null)
+                    address1.setZipCode(address.getZipCode());
+                user.setAddress(addressList);
+                userRepo.save(user);
+                return 1;
+            }
+        }
+        return 0;
+    }
 }
