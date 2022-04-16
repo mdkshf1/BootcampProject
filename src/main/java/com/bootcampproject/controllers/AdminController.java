@@ -38,7 +38,7 @@ public class AdminController {
         return new ResponseEntity<Page<SellerResponseTO>>((Page<SellerResponseTO>) adminService.findAllSellers(PageRequest.of(offset,limit,Sort.by("id"))).getContent(),HttpStatus.OK);
     }
 
-    @PatchMapping("/activateCustomer/{user_id}")
+/*    @PatchMapping("/activateCustomer/{user_id}")
     public ResponseEntity<?> activateCustomer(@PathVariable("user_id")Long user_id)
     {
         return new ResponseEntity<String>(adminService.activateCustomer(user_id),HttpStatus.OK);
@@ -48,8 +48,20 @@ public class AdminController {
     public ResponseEntity<?> deactivateCustomer(@PathVariable("user_id")Long user_id)
     {
         return new ResponseEntity<String>(adminService.deactivateCustomer(user_id),HttpStatus.OK);
+    }*/
+
+    @PatchMapping("/activateOrDeactivateCustomer/{user_id}")
+    public ResponseEntity<?> activateOrDeactivateCustomer(@PathVariable("user_id")Long user_id)
+    {
+        return new ResponseEntity<String>(adminService.activateOrDeactivateCustomer(user_id),HttpStatus.OK);
     }
 
+    @PatchMapping("/activateOrDeactivateSeller/{user_id}")
+    public ResponseEntity<?> activateOrDeactivateSeller(@PathVariable("user_id")Long user_id)
+    {
+        return new ResponseEntity<String>(adminService.activateOrDeactivateSeller(user_id),HttpStatus.OK);
+    }
+/*
     @PatchMapping("/activateSeller/{user_id}")
     public ResponseEntity<?> activateSeller(@PathVariable("user_id")Long user_id)
     {
@@ -60,5 +72,5 @@ public class AdminController {
     public ResponseEntity<?> deactivateSeller(@PathVariable("user_id")Long user_id)
     {
         return new ResponseEntity<String>(adminService.deactivateSeller(user_id),HttpStatus.OK);
-    }
+    }*/
 }

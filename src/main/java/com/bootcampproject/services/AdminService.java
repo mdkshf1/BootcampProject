@@ -7,8 +7,7 @@ import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
-import com.bootcampproject.exceptions.UserAlreadyExistException;
-import com.bootcampproject.exceptions.UserNotFoundException;
+import com.bootcampproject.exceptions.DataNotFoundException;
 import com.bootcampproject.repositories.CustomerRepo;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.SellerRepo;
@@ -51,17 +50,20 @@ public class AdminService {
 
     public User createAdmin(UserTO userTO)
     {
-        User user = userRepo.findByEmail(userTO.getEmail());
+/*        User user = userRepo.findByEmail(userTO.getEmail());
         if (user != null)
         {
             throw new UserAlreadyExistException("Admin with this mail already exist");
-        }
+        }*/
         Role role = roleRepo.findByAuthority(ROLE_ADMIN);
         userTO.setRoles(Collections.singleton(role));
         log.info("ROLE SET FOR ADMIN");
+        User user;
         user = User.create(userTO);
         user.setPassword(passwordEncoder.encode(userTO.getPassword()));
+        log.info("password encoded");
         user.setActive(true);
+        log.info("activating and setting role");
         userRepo.save(user);
         return user;
     }
@@ -72,7 +74,7 @@ public class AdminService {
     {
         User user = userService.findByEmail(email);
         if (user==null)
-            throw new UserNotFoundException("Customer with "+email+" is not found");
+            throw new DataNotFoundException("Customer with "+email+" is not found");
         return AdminCustomerResponseTO.getCustomer(user);
     }
     public Page<AdminCustomerResponseTO> findAllCustomers(Pageable pageable)
@@ -80,7 +82,7 @@ public class AdminService {
         List<AdminCustomerResponseTO> customers = new ArrayList<>();
         List<Customer> customerList= customerRepo.findAll();
         if (customerList.isEmpty())
-            throw new UserNotFoundException("There is no user present");
+            throw new DataNotFoundException("There is no user present");
         for (Customer customer:customerList
              ) {
             User user = customer.getUser();
@@ -101,7 +103,7 @@ public class AdminService {
         List<SellerResponseTO> sellerResponseTOList = new ArrayList<>();
         List<Seller> sellerList = sellerRepo.findAll();
         if (sellerList.isEmpty())
-            throw new UserNotFoundException("There is no user found");
+            throw new DataNotFoundException("There is no user found");
         for (Seller seller:sellerList
              ) {
             User user = seller.getUser();
@@ -111,9 +113,9 @@ public class AdminService {
         return (Page<SellerResponseTO>) sellerResponseTOList;
     }
 
-    public String activateCustomer(Long user_id)
+/*    public String activateCustomer(Long user_id)
     {
-        Customer customer = customerRepo.getById(user_id);
+        Customer customer = customerRepo.findById(user_id).get();
         if (customer == null)
             throw new UserNotFoundException("Unable to find customer with this user_id");
         User user = userService.findUserById(user_id);
@@ -125,7 +127,7 @@ public class AdminService {
 
     public String deactivateCustomer(Long user_id)
     {
-        Customer customer = customerRepo.getById(user_id);
+        Customer customer = customerRepo.findById(user_id).get();
         if (customer ==null)
             throw new UserNotFoundException("Unable to find Customer with this user_id");
         User user = userService.findUserById(user_id);
@@ -133,10 +135,10 @@ public class AdminService {
             return "Customer already Deactivated";
         userService.deactivateUser(user);
         return "Customer has been DeActivated";
-    }
-    public String activateSeller(Long user_id)
+    }*/
+/*    public String activateSeller(Long user_id)
     {
-        Seller seller = sellerRepo.getById(user_id);
+        Seller seller = sellerRepo.findById(user_id).get();
         if (seller == null)
             throw new UserNotFoundException("Unable to find seller with this user_id");
         User user = userService.findUserById(user_id);
@@ -147,7 +149,7 @@ public class AdminService {
     }
     public String deactivateSeller(Long user_id)
     {
-        Seller seller = sellerRepo.getById(user_id);
+        Seller seller = sellerRepo.findById(user_id).get();
         if (seller == null)
             throw new UserNotFoundException("Unable to find seller with this user_id");
         User user = userService.findUserById(user_id);
@@ -155,5 +157,49 @@ public class AdminService {
             return "Seller already deactivated";
         userService.deactivateUser(user);
         return "Seller has been deactivated";
+    }*/
+
+    public String activateOrDeactivateSeller(Long user_id)
+    {
+        Seller seller = sellerRepo.findById(user_id).get();
+        if (seller == null)
+            throw new DataNotFoundException("Customer with this id cannot be found");
+        User user = seller.getUser();
+        boolean b = user.isActive();
+        if (b==true)
+        {
+            user.setActive(false);
+            seller.setUser(user);
+            sellerRepo.save(seller);
+            return "Customer was active and now deactivated";
+        }
+        else{
+            user.setActive(true);
+            seller.setUser(user);
+            sellerRepo.save(seller);
+            return "Customer was deactivated and now activated";
+        }
+    }
+
+    public String activateOrDeactivateCustomer(Long user_id)
+    {
+        Customer customer = customerRepo.findById(user_id).get();
+        if (customer == null)
+            throw new DataNotFoundException("Customer with this id cannot be found");
+        User user = customer.getUser();
+        boolean b = user.isActive();
+        if (b==true)
+        {
+            user.setActive(false);
+            customer.setUser(user);
+            customerRepo.save(customer);
+            return "Customer was active and now deactivated";
+        }
+        else{
+            user.setActive(true);
+            customer.setUser(user);
+            customerRepo.save(customer);
+            return "Customer was deactivated and now activated";
+        }
     }
 }

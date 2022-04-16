@@ -1,10 +1,12 @@
 package com.bootcampproject.entities;
 
+import jdk.dynalink.linker.LinkerServices;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +26,7 @@ public class Seller extends AuditingInfo {
     @OneToOne
     @MapsId
     private User user;
+
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "seller")
+    private List<Product> products;
 }

@@ -15,7 +15,7 @@ public class Customer extends AuditingInfo implements Serializable {
 
     @Id
     private Long id;
-    @Size(min = 10,max = 10,message = "Enter 10 digits without +91")
+    @Size(min = 10, max = 10, message = "Enter 10 digits without +91")
     private String contact;
     @OneToOne
     @MapsId
@@ -27,4 +27,20 @@ public class Customer extends AuditingInfo implements Serializable {
     /*@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)*/
     @Transient
     private List<Address> addressList;
+
+    @OneToMany(mappedBy = "customer")
+    private List<ProductReview> productReviews;
+
+    @OneToOne(mappedBy = "customer")
+    private Orders orders;
+
+/*    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
+    private ProductReview productReview;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
+    private Cart cart;*/
+
+
+    @OneToOne(mappedBy = "customer")
+    private Cart cart;
 }

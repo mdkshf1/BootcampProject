@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -38,14 +39,14 @@ public class PublicController {
     private AdminService adminService;
 
     @Autowired
-    private CustomerService customerService;
-
-    @Autowired
     private MessageSource messageSource;
 
     @Autowired
-    private SellerService sellerService;
+    private CustomerService customerService;
 
+
+    @Autowired
+    private SellerService sellerService;
     @PostMapping("/register/seller")
     public ResponseEntity<?> createSeller(@Valid @RequestBody SellerTO sellerTO,BindingResult result)
     {
@@ -150,12 +151,6 @@ public class PublicController {
         userService.activateUser(user);
         return new ResponseEntity<String>("Account Activated", HttpStatus.OK);
     }
-    @GetMapping("/i18n")
-    public String i18n()
-    {
-        return messageSource.getMessage("good.morning.message",null, LocaleContextHolder.getLocale());
-
-    }
 
     @GetMapping("/forgot-password/{email}")
     public ResponseEntity<?> forgotPassword(@PathVariable("email") String email)
@@ -179,5 +174,11 @@ public class PublicController {
         String password = user.getPassword();
         user = userService.changePassword(gotuser,password);
         return new ResponseEntity<String>("Password changed Successfully",HttpStatus.OK);
+    }
+
+    @GetMapping("/i18n")
+    public String i18n()
+    {
+        return messageSource.getMessage("good.morning.message",null,LocaleContextHolder.getLocale());
     }
 }

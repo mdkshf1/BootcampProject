@@ -44,7 +44,7 @@ public class User extends AuditingInfo implements UserDetails {
     private Customer customer;
     @OneToOne(mappedBy = "user")
     private Seller seller;
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
     private Set<Role> roles;
 
     @Transient
@@ -93,7 +93,6 @@ public class User extends AuditingInfo implements UserDetails {
 
     public static User create(UserTO userTO)
     {
-        System.out.println(userTO);
         User user = new User();
         user.setEmail(userTO.getEmail());
         user.setFirstName(userTO.getFirstName());
@@ -105,6 +104,7 @@ public class User extends AuditingInfo implements UserDetails {
         user.setExpired(false);
         user.setInvalidAttemptCount(0);
         user.setRoles(userTO.getRoles());
+        log.info("role set for admin");
         user.setForgotPasswordToken(UUID.randomUUID().toString());
         System.out.println("inside user "+user);
         return user;

@@ -3,6 +3,7 @@ package com.bootcampproject.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Entity
 @Table(name = "Address")
+@Where(clause = "is_deleted=false")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +36,8 @@ public class Address {
     private Integer zipCode;
     @Size(min = 5, message = "Label should be atleast 5 characters")
     private String label;
+
+    private boolean isDeleted=false;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")

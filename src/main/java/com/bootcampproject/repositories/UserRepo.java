@@ -4,12 +4,17 @@ package com.bootcampproject.repositories;
 import com.bootcampproject.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepo extends JpaRepository<User, Long> {
     User findByEmail(String email);
 
     User findByForgotPasswordToken(String token);
 
-//findAll in customer Repo by using left join..
+    @Override
+    Optional<User> findById(Long aLong);
+
+    //findAll in customer Repo by using left join..
     //do it by using JOIN
     //findAll in customer
 /*@Query(value = "Select user.id,user.first_name,user.middle_name,user.last_name,user.is_active from user INNER JOIN customer on user.id = customer.user_id",nativeQuery = true)

@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "Role")
 @NoArgsConstructor
+@ToString
 public class Role implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +20,5 @@ public class Role implements Serializable {
     private String authority;
     @ManyToMany(mappedBy = "roles",cascade = CascadeType.ALL)
     private List<User> user;
+
 }

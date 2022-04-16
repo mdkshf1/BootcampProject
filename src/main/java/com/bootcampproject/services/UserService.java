@@ -11,7 +11,6 @@ import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.SellerRepo;
 import com.bootcampproject.repositories.UserRepo;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.build.Plugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,7 +52,7 @@ public class UserService {
 
 
     public User findUserById(Long id) {
-        return userRepo.getById(id);
+        return userRepo.findById(id).get();
     }
 
     public User activateUser(User user) {

@@ -37,7 +37,7 @@ public class CustomerController {
         return new ResponseEntity<CustomerResponseTO>(customerService.getDetails(), HttpStatus.OK);
     }
 
-    @GetMapping("address")
+    @GetMapping("/address")
     public ResponseEntity<?> getAddressDetails()
     {
         return new ResponseEntity<List<Address>>(customerService.getAddressDetails(),HttpStatus.OK);
@@ -97,7 +97,7 @@ public class CustomerController {
     public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id)
     {
        Integer flag = customerService.deleteAddress(id);
-       if (flag == 0)
+       if (flag == 1)
            return new ResponseEntity<String>("Address with this id is not found\nPlease check it again",HttpStatus.BAD_REQUEST);
        return new ResponseEntity<String>("Address deleted Successfully",HttpStatus.OK);
     }

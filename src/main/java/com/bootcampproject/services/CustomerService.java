@@ -8,6 +8,7 @@ import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.exceptions.NoAddressFoundException;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
 import com.bootcampproject.repositories.AddressRepo;
 import com.bootcampproject.repositories.CustomerRepo;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
 
@@ -125,6 +127,8 @@ public class CustomerService {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         List<Address> address = user.getAddress();
+        if (address.isEmpty())
+            throw new NoAddressFoundException("This customer does not have any Address");
         return address;
     }
     public void updateDetails(CustomerTO customerTO)
@@ -154,23 +158,27 @@ public class CustomerService {
         List<Address> addressList = user.getAddress();
         addressList.add(address);
         user.setAddress(addressList);
+        address.setUser(user);
         userRepo.save(user);
     }
-    public Integer deleteAddress(Long id)
-    {
+    public Integer deleteAddress(Long id) {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         List<Address> addressList = user.getAddress();
-        for (Address address:addressList) {
-            if (address.getId() != id)
+        for (Address address : addressList) {
+            if (address.getId() == id) {
+                log.info("Address found");
+                address.setDeleted(true);
+                addressRepo.save(address);
+                user.setAddress(addressList);
+                userRepo.save(user);
                 return 0;
+            }
         }
-        addressList.removeIf(address -> address.getId()==id);
-        user.setAddress(addressList);
-        userRepo.save(user);
+        log.info("Address not found");
+        /*addressList = addressList.stream().map(address ->{ if (address.getId()==id)address.setDeleted(true);return 0;}).collect(Collectors.toCollection());*/
         return 1;
     }
-
 
     //change in address update
     public Integer updateAddress(Long id,Address address)
