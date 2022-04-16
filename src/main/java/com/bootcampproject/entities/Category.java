@@ -10,11 +10,10 @@ public class Category {
     @Id
     private Long id;
 
-    @OneToMany(mappedBy = "parentCategory")
-    private List<Category> category;
     @ManyToOne(cascade ={CascadeType.ALL})
     @JoinColumn(name = "parentCategoryId")
     private Category parentCategory;
+
     private String name;
 
     @OneToOne(mappedBy = "category")

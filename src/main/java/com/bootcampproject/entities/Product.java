@@ -13,6 +13,7 @@ public class Product {
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Seller seller;
+
     private String name;
     private String description;
     @OneToOne
@@ -21,11 +22,12 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;*/
 
-    private boolean isCancellable;
-    private boolean isReturnable;
+    private Boolean isCancellable = false;
+    private Boolean isReturnable = false;
     private String brand;
-    private boolean isActive;
-    private boolean isDeleted;
+    private Boolean isActive = false;
+    private Boolean isDeleted = false;
+
     @OneToMany(mappedBy = "product")
     private List<ProductVariation> productVariation;
 

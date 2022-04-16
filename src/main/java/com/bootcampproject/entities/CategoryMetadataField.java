@@ -14,6 +14,7 @@ public class CategoryMetadataField {
 
     @Column(unique = true)
     private String name;
+
 /*    @OneToMany(mappedBy = "categoryMetadataField")
     private List<Category> category;*/
 

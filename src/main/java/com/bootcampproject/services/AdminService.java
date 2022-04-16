@@ -7,7 +7,7 @@ import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
-import com.bootcampproject.exceptions.DataNotFoundException;
+import com.bootcampproject.exceptions.EntityNotFoundException;
 import com.bootcampproject.repositories.CustomerRepo;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.SellerRepo;
@@ -74,7 +74,7 @@ public class AdminService {
     {
         User user = userService.findByEmail(email);
         if (user==null)
-            throw new DataNotFoundException("Customer with "+email+" is not found");
+            throw new EntityNotFoundException("Customer with "+email+" is not found");
         return AdminCustomerResponseTO.getCustomer(user);
     }
     public Page<AdminCustomerResponseTO> findAllCustomers(Pageable pageable)
@@ -82,7 +82,7 @@ public class AdminService {
         List<AdminCustomerResponseTO> customers = new ArrayList<>();
         List<Customer> customerList= customerRepo.findAll();
         if (customerList.isEmpty())
-            throw new DataNotFoundException("There is no user present");
+            throw new EntityNotFoundException("There is no user present");
         for (Customer customer:customerList
              ) {
             User user = customer.getUser();
@@ -103,7 +103,7 @@ public class AdminService {
         List<SellerResponseTO> sellerResponseTOList = new ArrayList<>();
         List<Seller> sellerList = sellerRepo.findAll();
         if (sellerList.isEmpty())
-            throw new DataNotFoundException("There is no user found");
+            throw new EntityNotFoundException("There is no user found");
         for (Seller seller:sellerList
              ) {
             User user = seller.getUser();
@@ -163,7 +163,7 @@ public class AdminService {
     {
         Seller seller = sellerRepo.findById(user_id).get();
         if (seller == null)
-            throw new DataNotFoundException("Customer with this id cannot be found");
+            throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = seller.getUser();
         boolean b = user.isActive();
         if (b==true)
@@ -185,7 +185,7 @@ public class AdminService {
     {
         Customer customer = customerRepo.findById(user_id).get();
         if (customer == null)
-            throw new DataNotFoundException("Customer with this id cannot be found");
+            throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = customer.getUser();
         boolean b = user.isActive();
         if (b==true)

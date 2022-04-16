@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.bootcampproject.constants.AppConstant.*;
+
 @Configuration
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
@@ -29,12 +31,12 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     {
         return new BCryptPasswordEncoder();
     }
-    @Override
+/*    @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/seller/**").hasRole("SELLER")
                 .antMatchers("/customer/**").hasRole("CUSTOMER")
                 .antMatchers("/**").permitAll().and().csrf().disable();
-    }
+    }*/
 }

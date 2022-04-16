@@ -3,8 +3,10 @@ package com.bootcampproject.controllers;
 import com.bootcampproject.dto.SellerTO;
 import com.bootcampproject.dto.UpdatePasswordTO;
 import com.bootcampproject.entities.Address;
+import com.bootcampproject.entities.Product;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.services.ProductService;
 import com.bootcampproject.services.SellerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,15 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-/*@PreAuthorize("hasRole('ROLE_SELLER')")*/
+@PreAuthorize("hasRole('ROLE_SELLER')")
 @RequestMapping("/seller")
 public class SellerController
 {
     @Autowired
     private SellerService sellerService;
+
+    @Autowired
+    private ProductService productService;
 
 
     @GetMapping("/profile")
@@ -82,5 +87,15 @@ public class SellerController
         }
         sellerService.updateAddress(address);
         return new ResponseEntity<String>("Address Updated",HttpStatus.OK);
+    }
+    @GetMapping("/check")
+    public String check()
+    {
+        return "Working Seller";
+    }
+    @PostMapping("addProduct")
+    public ResponseEntity<?> addProduct(@RequestBody Product product)
+    {
+        return new ResponseEntity<Product>(productService.addProduct(product),HttpStatus.OK);
     }
 }

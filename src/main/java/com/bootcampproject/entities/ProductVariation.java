@@ -1,8 +1,10 @@
 package com.bootcampproject.entities;
 
+import jdk.dynalink.linker.LinkerServices;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,14 +20,10 @@ public class ProductVariation {
     private String primaryImageName;
     private boolean isActive;
 
-    @OneToOne(mappedBy = "productVariation")
-    private OrderProduct orderProduct;
+    @OneToMany
+    private List<OrderProduct> orderProduct;
 
-    @OneToOne(mappedBy = "productVariation")
-    private Cart cart;
-
-/*
-    @OneToOne(mappedBy = "productVariation")
+/*    @ManyToOne
     private Cart cart;*/
 
 }

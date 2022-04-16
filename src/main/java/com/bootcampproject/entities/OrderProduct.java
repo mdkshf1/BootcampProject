@@ -1,8 +1,8 @@
 package com.bootcampproject.entities;
 
 import lombok.Data;
-
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -13,11 +13,19 @@ public class OrderProduct {
 
     @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Orders order;
+
+
     private Long quantity;
+
     private double price;
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+
+    /*@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)*/
+    @ManyToOne
     private ProductVariation productVariation;
 
+
+    @OneToOne(mappedBy = "orderProduct")
+    private OrderStatus orderStatus;
 
 /*    @OneToOne
     @JoinColumn(name = "orders_id")

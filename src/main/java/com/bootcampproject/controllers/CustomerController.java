@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-/*@PreAuthorize("hasRole('ROLE_CUSTOMER')")*/
+@PreAuthorize("hasRole('ROLE_CUSTOMER')")
 @RequestMapping("/customer")
 public class CustomerController {
 
@@ -109,5 +109,11 @@ public class CustomerController {
         if (flag == 0)
             return new ResponseEntity<String>("Address with given id canot be found",HttpStatus.BAD_REQUEST);
         return new ResponseEntity<String>("Address updated Successfully",HttpStatus.OK);
+    }
+
+    @GetMapping("/check")
+    public String check()
+    {
+        return "Working";
     }
 }

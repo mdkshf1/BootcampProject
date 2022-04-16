@@ -11,18 +11,18 @@ public class Orders {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Customer customer;
 
     private Double amountPaid;
     private Date dateCreated;
     private String paymentMethod;
-    private String CustomerAddressCity;
-    private String CustomerAddressState;
-    private String CustomerAddressCountry;
-    private String CustomerAddressZipCode;
-    private String CustomerAddressLabel;
-    private String CustomerAddressLine;
+    private String customerAddressCity;
+    private String customerAddressState;
+    private String customerAddressCountry;
+    private String customerAddressZipCode;
+    private String customerAddressLabel;
+    private String customerAddressLine;
 
     @OneToMany(mappedBy = "order")
     private List<OrderProduct> orderProducts;

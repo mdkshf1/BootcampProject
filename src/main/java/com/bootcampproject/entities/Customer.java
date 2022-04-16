@@ -31,8 +31,8 @@ public class Customer extends AuditingInfo implements Serializable {
     @OneToMany(mappedBy = "customer")
     private List<ProductReview> productReviews;
 
-    @OneToOne(mappedBy = "customer")
-    private Orders orders;
+    @OneToMany(mappedBy = "customer")
+    private List<Orders> orders;
 
 /*    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
     private ProductReview productReview;
@@ -40,7 +40,7 @@ public class Customer extends AuditingInfo implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
     private Cart cart;*/
 
-
+/*
     @OneToOne(mappedBy = "customer")
-    private Cart cart;
+    private Cart cart;*/
 }

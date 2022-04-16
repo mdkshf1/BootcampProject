@@ -3,10 +3,12 @@ package com.bootcampproject.services;
 
 import com.bootcampproject.entities.Category;
 import com.bootcampproject.entities.CategoryMetadataField;
-import com.bootcampproject.exceptions.DataNotFoundException;
+import com.bootcampproject.entities.CategoryMetadataFieldValues;
+import com.bootcampproject.exceptions.EntityNotFoundException;
 import com.bootcampproject.exceptions.EmptyListException;
 import com.bootcampproject.exceptions.DataAlreadyPresentException;
 import com.bootcampproject.repositories.CategoryMetadataFieldRepo;
+import com.bootcampproject.repositories.CategoryMetadataFieldValuesRepo;
 import com.bootcampproject.repositories.CategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,9 @@ public class CategoryService {
 
     @Autowired
     private CategoryMetadataFieldRepo metadataRepo;
+
+    @Autowired
+    private CategoryMetadataFieldValuesRepo metadataFieldValuesRepo;
 
     public Long addMetadata(String name)
     {
@@ -73,8 +78,24 @@ public class CategoryService {
     public Category updateCategory(Long id,String name) {
         Category category = categoryRepo.findById(id).get();
         if (category == null)
-            throw new DataNotFoundException("Category with this id not found");
+            throw new EntityNotFoundException("Category with this id not found");
         category.setName(name);
         return categoryRepo.save(category);
+    }
+    public CategoryMetadataFieldValues addCategoryMetadata(CategoryMetadataFieldValues metadata)
+    {
+        Category category = metadata.getCategory();
+        Long categoryId = category.getId();
+        CategoryMetadataField categoryMetadataField = metadata.getCategoryMetadataField();
+        Long categoryMetadataFieldId = categoryMetadataField.getId();
+        if (categoryRepo.findById(categoryId) == null)
+            throw new EntityNotFoundException("Category with this categoryId is not found please recheck the categoryId");
+        else if (metadataRepo.findById(categoryMetadataFieldId) == null)
+            throw new EntityNotFoundException("Category Metadata with this id is not found please check the CategoryMetadataId");
+        CategoryMetadataFieldValues categoryMetadataFieldValues = new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues.setCategory(category);
+        categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataField);
+        /*categoryMetadataFieldValues.setValues(metadata.getValue);*/
+        return metadataFieldValuesRepo.save(categoryMetadataFieldValues);
     }
 }

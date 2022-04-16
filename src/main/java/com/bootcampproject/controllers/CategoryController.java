@@ -2,6 +2,7 @@ package com.bootcampproject.controllers;
 
 import com.bootcampproject.entities.Category;
 import com.bootcampproject.entities.CategoryMetadataField;
+import com.bootcampproject.entities.CategoryMetadataFieldValues;
 import com.bootcampproject.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -54,4 +55,9 @@ public class CategoryController {
         return new ResponseEntity<Category>(categoryService.updateCategory(id,name),HttpStatus.OK);
     }
 
+    @PostMapping("metadataCategory")
+    public ResponseEntity<?> createMetadata(@RequestBody CategoryMetadataFieldValues metadata)
+    {
+        return new ResponseEntity<CategoryMetadataFieldValues>(categoryService.addCategoryMetadata(metadata),HttpStatus.OK);
+    }
 }

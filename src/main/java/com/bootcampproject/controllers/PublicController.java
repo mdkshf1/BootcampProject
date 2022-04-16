@@ -10,6 +10,7 @@ import com.bootcampproject.services.AdminService;
 import com.bootcampproject.services.CustomerService;
 import com.bootcampproject.services.SellerService;
 import com.bootcampproject.services.UserService;
+import com.bootcampproject.utils.SecurityContextHolderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -71,7 +73,7 @@ public class PublicController {
         catch (Exception e)
         {
             log.error(" Exception occurred in register seller " + sellerTO, e);
-            return new ResponseEntity<String>("Exception occurred while registering customer",HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>("Exception occurred while registering Seller",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -180,5 +182,11 @@ public class PublicController {
     public String i18n()
     {
         return messageSource.getMessage("good.morning.message",null,LocaleContextHolder.getLocale());
+    }
+
+    @GetMapping("/currentUser")
+    public String currentUser(@CurrentSecurityContext(expression = "authentication.name")String username)
+    {
+        return SecurityContextHolderUtil.getCurrentUserEmail();
     }
 }

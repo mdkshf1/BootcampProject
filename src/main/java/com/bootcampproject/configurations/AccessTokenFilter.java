@@ -53,7 +53,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
             if (user == null) {
                 response.setStatus(HttpStatus.NOT_FOUND.value());
-                response.getWriter().write("User not exists");
+                response.getWriter().write("User not exists or Invalid Email provided");
                 return;
             }
             if (user.isLocked()) {
@@ -65,7 +65,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 hasErrors = true;
             }
             if (user.isExpired()) {
-                errors.add("Your password id expired");
+                errors.add("Your password is expired");
                 hasErrors = true;
             }
             if (hasErrors) {
