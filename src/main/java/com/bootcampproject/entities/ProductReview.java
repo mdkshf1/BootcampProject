@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @IdClass(ProductReviewPK.class)
-public class ProductReview {
+public class ProductReview extends AuditingInfo{
     @Id
     @ManyToOne
     private Customer customer;

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class ProductVariation {
+public class ProductVariation extends AuditingInfo{
 
     @Id
     private Long id;
@@ -18,12 +18,8 @@ public class ProductVariation {
     private Double price;
     private String metadata;
     private String primaryImageName;
-    private boolean isActive;
+    private Boolean isActive;
 
     @OneToMany
     private List<OrderProduct> orderProduct;
-
-/*    @ManyToOne
-    private Cart cart;*/
-
 }

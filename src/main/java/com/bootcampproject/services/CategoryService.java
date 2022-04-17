@@ -10,14 +10,17 @@ import com.bootcampproject.exceptions.DataAlreadyPresentException;
 import com.bootcampproject.repositories.CategoryMetadataFieldRepo;
 import com.bootcampproject.repositories.CategoryMetadataFieldValuesRepo;
 import com.bootcampproject.repositories.CategoryRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CategoryService {
 
     @Autowired
@@ -28,16 +31,23 @@ public class CategoryService {
 
     @Autowired
     private CategoryMetadataFieldValuesRepo metadataFieldValuesRepo;
-
+    @Transactional
     public Long addMetadata(String name)
     {
-        if (metadataRepo.findByName(name) != null)
+        CategoryMetadataField field = metadataRepo.findByName(name);
+        if (field != null) {
             throw new DataAlreadyPresentException("Metadata with this name already existed");
+        }
         CategoryMetadataField metadataField = new CategoryMetadataField();
+        log.info("Here we are");
         metadataField.setName(name);
+        log.info("setting");
         metadataRepo.save(metadataField);
+        log.info("after saving");
         CategoryMetadataField metadata = metadataRepo.findByName(name);
+        log.info("after finding");
         Long id = metadata.getId();
+        log.info("after getting id");
         return id;
     }
 

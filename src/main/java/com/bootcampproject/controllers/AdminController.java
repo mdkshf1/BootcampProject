@@ -5,6 +5,7 @@ import com.bootcampproject.dto.AdminSellerResponseTO;
 import com.bootcampproject.dto.CustomerResponseTO;
 import com.bootcampproject.dto.SellerResponseTO;
 import com.bootcampproject.entities.*;
+import com.bootcampproject.exceptions.DataAlreadyPresentException;
 import com.bootcampproject.exceptions.EntityNotFoundException;
 import com.bootcampproject.services.AdminService;
 import com.bootcampproject.services.CategoryService;
@@ -68,9 +69,9 @@ public class AdminController {
     }
 
     @PatchMapping("/customer/activateordeactivate/{user_id}")
-    public ResponseEntity<?> activateOrDeactivateCustomer(@PathVariable("user_id") Long user_id) {
+    public ResponseEntity<?> activateOrDeactivateCustomer(@PathVariable("user_id") Long user_id,@RequestParam(name = "active")Boolean active) {
         try {
-            return new ResponseEntity<String>(adminService.activateOrDeactivateCustomer(user_id), HttpStatus.OK);
+            return new ResponseEntity<String>(adminService.activateOrDeactivateCustomer(user_id,active), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -78,10 +79,20 @@ public class AdminController {
         }
     }
 
-    @PatchMapping("/seller/activateordeactivate/{user_id}")
-    public ResponseEntity<?> activateOrDeactivateSeller(@PathVariable("user_id") Long user_id) {
+    @PatchMapping("/user/lockorunlock/{user_id}")
+    public ResponseEntity<?> lockOrUnlockUser(@PathVariable("user_id") Long user_id,@RequestParam(name = "lock")Boolean lock) {
         try {
-        return new ResponseEntity<String>(adminService.activateOrDeactivateSeller(user_id), HttpStatus.OK);
+            return new ResponseEntity<String>(adminService.lockOrUnlockUser(user_id,lock), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("Exception occured while activating or deactivating a customer", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PatchMapping("/seller/activateordeactivate/{user_id}")
+    public ResponseEntity<?> activateOrDeactivateSeller(@PathVariable("user_id") Long user_id,Boolean active) {
+        try {
+        return new ResponseEntity<String>(adminService.activateOrDeactivateSeller(user_id,active), HttpStatus.OK);
     }catch(EntityNotFoundException e)
     {
         return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -90,33 +101,25 @@ public class AdminController {
         return new ResponseEntity<String>("Exception occured while activating or deactivating a Seller", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-
-
-    @GetMapping("/check")
-    public ResponseEntity<?> check()
-    {
-        return new ResponseEntity<String>("Working",HttpStatus.OK);
+    @PostMapping("/addmetadata")
+    public ResponseEntity<?> addMetadata(@RequestParam(name = "name")String name) {
+        try {
+            return new ResponseEntity<String>("Category Metadata saved and id is" + categoryService.addMetadata(name), HttpStatus.OK);
+        }catch (DataAlreadyPresentException e)
+        {
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e)
+        {
+            return new ResponseEntity<String>("Exception occured while saving Metadata Field",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
-    @GetMapping("/currentUser")
-    public String currentUser()
-    {
-        return SecurityContextHolderUtil.getCurrentUserEmail();
-    }
-
-    @PostMapping("/addMetadata")
-    public ResponseEntity<?> addMetadata(@RequestHeader(name = "name")String name)
-    {
-        return new ResponseEntity<String>("Category Metadata saved and id is"+categoryService.addMetadata(name), HttpStatus.OK);
-    }
-
-    @GetMapping("metadata")
+    @GetMapping("/metadata")
     public ResponseEntity<?> getAllMetadata(@RequestHeader(name = "offset",required = false)Integer offset,@RequestHeader(name = "limit",required = false)Integer limit)
     {
         return new ResponseEntity<List<CategoryMetadataField>>(categoryService.getAllMetadata(PageRequest.of(offset,limit)),HttpStatus.OK);
     }
 
-    @PostMapping("addCategory")
+    @PostMapping("/addCategory")
     public ResponseEntity<?> addCategory(@RequestHeader(name = "categoryName")String categoryName,@RequestHeader(name = "parentId",required = false)Long id)
     {
         return new ResponseEntity<String>("Category saved with id is"+categoryService.addCategory(categoryName,id),HttpStatus.OK);
@@ -133,15 +136,16 @@ public class AdminController {
         return new ResponseEntity<List<Category>>(categoryService.getAllCategory(PageRequest.of(offset,limit,Sort.by("id"))),HttpStatus.OK);
     }
 
-    @PutMapping("updateCategory/{id}")
+    @PutMapping("/updateCategory/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable("id")Long id,@RequestBody String name)
     {
         return new ResponseEntity<Category>(categoryService.updateCategory(id,name),HttpStatus.OK);
     }
 
-    @PostMapping("metadataCategory")
+    @PostMapping("/metadataCategory")
     public ResponseEntity<?> createMetadata(@RequestBody CategoryMetadataFieldValues metadata)
     {
         return new ResponseEntity<CategoryMetadataFieldValues>(categoryService.addCategoryMetadata(metadata),HttpStatus.OK);
     }
+
 }

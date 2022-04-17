@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Category {
+public class Category extends AuditingInfo {
     @Id
     private Long id;
 
@@ -18,14 +18,6 @@ public class Category {
 
     @OneToOne(mappedBy = "category")
     private Product product;
-
-/*    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private Set<Product> product;*/
-
-    
-
-/*    @OneToMany
-    private List<CategoryMetadataField> categoryMetadataField;*/
 
     @OneToMany(mappedBy = "category")
     private List<CategoryMetadataFieldValues> categoryMetadataFieldValues;

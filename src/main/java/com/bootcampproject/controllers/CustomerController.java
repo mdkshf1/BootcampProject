@@ -2,9 +2,12 @@ package com.bootcampproject.controllers;
 
 import com.bootcampproject.dto.*;
 import com.bootcampproject.entities.Address;
+import com.bootcampproject.entities.Product;
 import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.exceptions.EntityNotFoundException;
 import com.bootcampproject.exceptions.NoEntityFoundException;
 import com.bootcampproject.services.CustomerService;
+import com.bootcampproject.services.ProductService;
 import com.bootcampproject.services.SellerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private SellerService sellerService;
@@ -113,13 +119,23 @@ public class CustomerController {
     {
         Integer flag = customerService.updateAddress(id,address);
         if (flag == 0)
-            return new ResponseEntity<String>("Address with given id canot be found",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Address with given id cannot be found",HttpStatus.BAD_REQUEST);
         return new ResponseEntity<String>("Address updated Successfully",HttpStatus.OK);
     }
-
-    @GetMapping("/check")
-    public String check()
+    @GetMapping("viewproduct/{product_id}")
+    public ResponseEntity<?> viewProduct(@PathVariable(name = "product_id")Long product_id)
     {
-        return "Working";
+        try
+        {
+            return new ResponseEntity<Product>(productService.viewProductCustomer(product_id),HttpStatus.OK);
+        }catch (EntityNotFoundException e)
+        {
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e)
+        {
+            return new ResponseEntity<String>("Exception occurred while viewing a product",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 }

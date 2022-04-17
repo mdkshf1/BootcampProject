@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-public class OrderStatus {
+public class OrderStatus extends AuditingInfo{
     @Id
     @Column(name = "id", nullable = false)
     private Long id;

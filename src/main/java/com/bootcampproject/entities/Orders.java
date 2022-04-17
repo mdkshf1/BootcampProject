@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Orders {
+public class Orders extends AuditingInfo{
     @Id
     @Column(name = "id", nullable = false)
     private Long id;

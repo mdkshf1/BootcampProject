@@ -6,7 +6,7 @@ import java.util.List;
 @Entity
 @IdClass(CartPK.class)
 @Data
-public class Cart {
+public class Cart extends AuditingInfo{
 
     @Id
     @OneToOne

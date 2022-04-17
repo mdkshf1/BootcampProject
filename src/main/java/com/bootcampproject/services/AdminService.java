@@ -95,19 +95,6 @@ public class AdminService {
             AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
             customers.add(adminCustomerResponseTO);
         });
-/*        if (customerPage.isEmpty())
-            throw new EntityNotFoundException("There is no user present");
-        customerPage.stream().forEach(customer -> {
-            User user = customer.getUser();
-            AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
-            customers.add(adminCustomerResponseTO);
-        });*/
-       /* for (Customer customer:customerList
-             ) {
-            User user = customer.getUser();
-            AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
-            customers.add(adminCustomerResponseTO);
-        }*/
         return customers;
     }
 
@@ -134,99 +121,61 @@ public class AdminService {
         return (Page<SellerResponseTO>) sellerResponseTOList;
     }
 
-/*    public String activateCustomer(Long user_id)
-    {
-        Customer customer = customerRepo.findById(user_id).get();
-        if (customer == null)
-            throw new UserNotFoundException("Unable to find customer with this user_id");
-        User user = userService.findUserById(user_id);
-        if (user.isActive())
-            return "Customer already activated";
-        userService.activateUser(user);
-        return "Customer has been activated";
-    }
-
-    public String deactivateCustomer(Long user_id)
-    {
-        Customer customer = customerRepo.findById(user_id).get();
-        if (customer ==null)
-            throw new UserNotFoundException("Unable to find Customer with this user_id");
-        User user = userService.findUserById(user_id);
-        if (!user.isActive())
-            return "Customer already Deactivated";
-        userService.deactivateUser(user);
-        return "Customer has been DeActivated";
-    }*/
-/*    public String activateSeller(Long user_id)
-    {
-        Seller seller = sellerRepo.findById(user_id).get();
-        if (seller == null)
-            throw new UserNotFoundException("Unable to find seller with this user_id");
-        User user = userService.findUserById(user_id);
-        if (user.isActive())
-            return "Seller already activated";
-        userService.activateUser(user);
-        return "Seller has been activated";
-    }
-    public String deactivateSeller(Long user_id)
-    {
-        Seller seller = sellerRepo.findById(user_id).get();
-        if (seller == null)
-            throw new UserNotFoundException("Unable to find seller with this user_id");
-        User user = userService.findUserById(user_id);
-        if (!user.isActive())
-            return "Seller already deactivated";
-        userService.deactivateUser(user);
-        return "Seller has been deactivated";
-    }*/
-
-    public String activateOrDeactivateSeller(Long user_id)
+    public String activateOrDeactivateSeller(Long user_id,Boolean active)
     {
         Seller seller = sellerRepo.findByUserId(user_id);
         if (seller == null)
             throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = seller.getUser();
-        boolean b = user.isActive();
-        if (b==true)
+        user.setActive(active);
+        userRepo.save(user);
+        if (user.isActive())
         {
-            user.setActive(false);
-            seller.setUser(user);
-            sellerRepo.save(seller);
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got deactivated by admin\nfor help contact admin");
-            return "Customer was active and now deactivated";
+            return "Seller was active and now deactivated";
         }
         else{
-            user.setActive(true);
-            seller.setUser(user);
-            sellerRepo.save(seller);
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got activated by admin\nNow enjoy being with us");
-            return "Customer was deactivated and now activated";
+            return "Seller was deactivated and now activated";
         }
     }
 
-    public String activateOrDeactivateCustomer(Long user_id)
+    public String activateOrDeactivateCustomer(Long user_id,Boolean active)
     {
         Customer customer = customerRepo.findByUserId(user_id);
         if (customer == null)
             throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = customer.getUser();
-        boolean b = user.isActive();
-        if (b==true)
+        user.setActive(active);
+        userRepo.save(user);
+        if (user.isActive())
         {
-            user.setActive(false);
-            customer.setUser(user);
-            customerRepo.save(customer);
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got deactivated by admin\nfor help contact admin");
             return "Customer was active and now deactivated";
         }
         else{
-            user.setActive(true);
-            customer.setUser(user);
-            customerRepo.save(customer);
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got activated by admin\nEnjoy being with us");
             return "Customer was deactivated and now activated";
         }
     }
+    public String lockOrUnlockUser(Long user_id,Boolean lock)
+    {
+        User user = userRepo.getById(user_id);
+        if (user == null)
+            throw new EntityNotFoundException("User with this userid cannot be found");
+        user.setLocked(lock);
+        userRepo.save(user);
+        if (user.isLocked())
+        {
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got locked by admin\nPlease contact the admin");
+            return "User was unlocked and now locked";
+        }
+        else{
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got unlocked by admin\nEnjoy being with us");
+            return "User was locked and now unlocked";
+        }
+    }
+
     private void simpleMail(String to,String subject,String text)
     {
         simpleMailService.sendMail(to,subject,text);

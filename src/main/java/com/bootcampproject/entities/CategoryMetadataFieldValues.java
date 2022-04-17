@@ -7,7 +7,7 @@ import java.util.List;
 @Entity
 @Data
 @IdClass(CategoryMetadataFieldValuesPK.class)
-public class CategoryMetadataFieldValues {
+public class CategoryMetadataFieldValues extends AuditingInfo{
 
     @Id
     @ManyToOne
@@ -17,6 +17,6 @@ public class CategoryMetadataFieldValues {
     @ManyToOne
     private Category category;
 
-//    private String values;
+    private String categoryValues;
 
 }

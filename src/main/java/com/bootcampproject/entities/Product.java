@@ -1,13 +1,15 @@
 package com.bootcampproject.entities;
 
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
-public class Product {
+@Where(clause = "is_deleted=false")
+public class Product extends AuditingInfo{
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
