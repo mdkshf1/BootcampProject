@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -33,12 +35,14 @@ public class UserTO {
     @NotNull
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",message = "Enter mail in correct format or invalid mail")
     private String email;
-    @NotBlank
+    @NotBlank(message = "First name must not be null")
     private String firstName;
     private String middleName;
+    @NotNull(message = "Last Name could not be null")
+    @NotBlank(message = "Last Name cannot be blank")
     private String lastName;
     @NotNull
-    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters")
+    @Size(min = 8, max = 15,message = "Password should be of 8 to 15 characters long")
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
     private String password;
     @NotNull
@@ -46,10 +50,8 @@ public class UserTO {
     @JsonIgnore
     @OneToOne(mappedBy = "user")
     private Seller seller;
-
     @JsonIgnore
     private Set<Role> roles;
-
     private List<Address> addressList;
 
 }

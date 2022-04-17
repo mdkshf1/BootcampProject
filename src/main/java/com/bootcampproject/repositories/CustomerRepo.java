@@ -9,5 +9,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
 
     Customer findByActivationToken(String activationToken);
 
+    Customer findByUserId(Long id);
+
     List<Customer> findAll();
 }

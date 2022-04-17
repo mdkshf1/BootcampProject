@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "Seller")
-public class Seller extends AuditingInfo {
+public class Seller extends AuditingInfo implements Serializable {
     @Id
     private Long id;
     @Column(unique = true)

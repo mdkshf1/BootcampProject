@@ -7,13 +7,17 @@ import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
+import com.bootcampproject.exceptions.NoEntityFoundException;
+import com.bootcampproject.exceptions.UserNotActivatedException;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.SellerRepo;
 import com.bootcampproject.repositories.UserRepo;
+import com.bootcampproject.utils.SecurityContextHolderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
@@ -40,12 +44,13 @@ public class UserService {
     private SellerRepo sellerRepo;
 
     @Autowired
+    private TokenStore tokenStore;
+
+    @Autowired
     private SimpleMailService simpleMailService;
 
 
 
-
-    //rename findbyEmail
     public User findByEmail(String email) {
         return userRepo.findByEmail(email);
     }
@@ -58,7 +63,6 @@ public class UserService {
     public User activateUser(User user) {
         user.setActive(true);
         userRepo.save(user);
-        System.out.println(user);
         String subject = "This is to notify that your account has been activated";
         String text = "As your account has been activated now you can enjoy our service as per criteria";
         simpleMailService.sendMail(user.getEmail(),subject,text);
@@ -68,7 +72,6 @@ public class UserService {
     public User deactivateUser(User user) {
         user.setActive(false);
         userRepo.save(user);
-        System.out.println(user);
         String subject = "This is to notify that your account has been deactivated";
         String text = "As your account has been deactivated now you cannot enjoy our service as per criteria";
         simpleMailService.sendMail(user.getEmail(),subject,text);
@@ -77,6 +80,8 @@ public class UserService {
 
     public void forgotPassword(User user)
     {
+        if (!user.isActive())
+            throw new UserNotActivatedException("This user is not activated\nFirst activate your account by admin and then you can change your password");
         user.setForgotPasswordToken(UUID.randomUUID().toString());
         log.info("new token "+user.getForgotPasswordToken());
         user.setForgotPasswordAt(new Date());
@@ -100,4 +105,15 @@ public class UserService {
         simpleMailService.sendMail(user.getEmail(),subject,body);
         return userRepo.save(user);
     }
+
+    public String logOut(String token)
+    {
+        if (token == null)
+            throw new NoEntityFoundException("No token found\nOr you are already logged out");
+        String email = SecurityContextHolderUtil.getCurrentUserEmail();
+        String finalToken = token.replace("Bearer ","").trim();
+        tokenStore.removeAccessToken(tokenStore.readAccessToken(finalToken));
+        return "Logged Out Successfully";
+    }
+
 }

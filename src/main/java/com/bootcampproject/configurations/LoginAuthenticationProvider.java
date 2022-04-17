@@ -69,8 +69,7 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
                     user.setLocked(true);
 
 
-                    mailService.sendMail(user.getEmail(), "Your account has been locked now", "Hi, Your account has been locked due to maximum attempt of login!");
-//TODO : add send e-mail
+                    mailService.sendMail(user.getEmail(), "Your account has been locked now", "Hi, Your account has been locked due to maximum attempt of login!\nTo activate your account please contact Admin via admin@gmail.com");
 
                 } else {
                     user.getRoles().forEach(role -> log.info(role.getAuthority()));

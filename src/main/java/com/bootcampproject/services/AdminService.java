@@ -1,6 +1,7 @@
 package com.bootcampproject.services;
 
 import com.bootcampproject.dto.AdminCustomerResponseTO;
+import com.bootcampproject.dto.AdminSellerResponseTO;
 import com.bootcampproject.dto.SellerResponseTO;
 import com.bootcampproject.dto.UserTO;
 import com.bootcampproject.entities.Customer;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.bootcampproject.constants.AppConstant.ROLE_ADMIN;
 
@@ -35,6 +37,9 @@ public class AdminService {
     //autowire user service
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SimpleMailService simpleMailService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -73,30 +78,46 @@ public class AdminService {
     public AdminCustomerResponseTO findCustomerByEmail(String email)
     {
         User user = userService.findByEmail(email);
-        if (user==null)
+        Customer customer = user.getCustomer();
+        if (customer==null)
             throw new EntityNotFoundException("Customer with "+email+" is not found");
         return AdminCustomerResponseTO.getCustomer(user);
     }
-    public Page<AdminCustomerResponseTO> findAllCustomers(Pageable pageable)
+    public List<AdminCustomerResponseTO> findAllCustomers(Pageable pageable)
     {
         List<AdminCustomerResponseTO> customers = new ArrayList<>();
-        List<Customer> customerList= customerRepo.findAll();
+        Page<Customer> customerPage= customerRepo.findAll(pageable);
+        List<Customer> customerList = customerPage.getContent();
         if (customerList.isEmpty())
             throw new EntityNotFoundException("There is no user present");
-        for (Customer customer:customerList
+        customerList.stream().forEach(customer -> {
+            User user = customer.getUser();
+            AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
+            customers.add(adminCustomerResponseTO);
+        });
+/*        if (customerPage.isEmpty())
+            throw new EntityNotFoundException("There is no user present");
+        customerPage.stream().forEach(customer -> {
+            User user = customer.getUser();
+            AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
+            customers.add(adminCustomerResponseTO);
+        });*/
+       /* for (Customer customer:customerList
              ) {
             User user = customer.getUser();
             AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
             customers.add(adminCustomerResponseTO);
-        }
-        return (Page<AdminCustomerResponseTO>) customers;
+        }*/
+        return customers;
     }
 
-    public SellerResponseTO findSellerByEmail(String email)
+    public AdminSellerResponseTO findSellerByEmail(String email)
     {
         User user = userService.findByEmail(email);
         Seller seller = user.getSeller();
-        return SellerResponseTO.getSeller(seller,user);
+        if (seller == null)
+            throw new EntityNotFoundException("Seller with "+email+" is not found");
+        return AdminSellerResponseTO.mapper(user);
     }
     public Page<SellerResponseTO> findAllSellers(Pageable pageable)
     {
@@ -161,7 +182,7 @@ public class AdminService {
 
     public String activateOrDeactivateSeller(Long user_id)
     {
-        Seller seller = sellerRepo.findById(user_id).get();
+        Seller seller = sellerRepo.findByUserId(user_id);
         if (seller == null)
             throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = seller.getUser();
@@ -171,19 +192,21 @@ public class AdminService {
             user.setActive(false);
             seller.setUser(user);
             sellerRepo.save(seller);
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got deactivated by admin\nfor help contact admin");
             return "Customer was active and now deactivated";
         }
         else{
             user.setActive(true);
             seller.setUser(user);
             sellerRepo.save(seller);
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got activated by admin\nNow enjoy being with us");
             return "Customer was deactivated and now activated";
         }
     }
 
     public String activateOrDeactivateCustomer(Long user_id)
     {
-        Customer customer = customerRepo.findById(user_id).get();
+        Customer customer = customerRepo.findByUserId(user_id);
         if (customer == null)
             throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = customer.getUser();
@@ -193,13 +216,19 @@ public class AdminService {
             user.setActive(false);
             customer.setUser(user);
             customerRepo.save(customer);
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got deactivated by admin\nfor help contact admin");
             return "Customer was active and now deactivated";
         }
         else{
             user.setActive(true);
             customer.setUser(user);
             customerRepo.save(customer);
+            simpleMail(user.getEmail(),"Info about account","This is to inform that your account got activated by admin\nEnjoy being with us");
             return "Customer was deactivated and now activated";
         }
+    }
+    private void simpleMail(String to,String subject,String text)
+    {
+        simpleMailService.sendMail(to,subject,text);
     }
 }

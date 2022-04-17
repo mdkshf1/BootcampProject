@@ -1,14 +1,16 @@
 package com.bootcampproject.services;
 
 
+import com.bootcampproject.dto.AddressUpdateTO;
 import com.bootcampproject.dto.CustomerResponseTO;
 import com.bootcampproject.dto.CustomerTO;
+import com.bootcampproject.dto.CustomerUpdateTO;
 import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.User;
 import com.bootcampproject.exceptions.CannotChangeException;
-import com.bootcampproject.exceptions.NoAddressFoundException;
+import com.bootcampproject.exceptions.NoEntityFoundException;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
 import com.bootcampproject.repositories.AddressRepo;
 import com.bootcampproject.repositories.CustomerRepo;
@@ -20,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.bootcampproject.constants.AppConstant.ROLE_CUSTOMER;
 
@@ -49,7 +50,7 @@ public class CustomerService {
     private SimpleMailService simpleMailService;
 
 
-    public Customer findCustomerByToken(String token)
+    public Customer findByActivationToken(String token)
     {
         return customerRepo.findByActivationToken(token);
     }
@@ -81,7 +82,7 @@ public class CustomerService {
         log.info("after saving customer returning to controller");
         return customerTO;
     }
-    private void sendmail(String to,String uuid)
+    public void sendmail(String to,String uuid)
     {
         String subject = "This is to notify to activate your account";
         String text = "http://localhost:8080/activate/"+uuid;
@@ -96,13 +97,6 @@ public class CustomerService {
         String subject = "To Notify that a seller/customer have registered";
         String text = "You have to activate this user by changing tha is_active of a particular user";
         simpleMailService.sendMail(to,subject,text);
-    }
-    public Long findTime(Date d1,Date d2)
-    {
-        Long time = d2.getTime()-d1.getTime();
-        long diffSeconds = time / 1000 % 60;
-        long diffMinutes = time / (60 * 1000) % 60;
-        return diffSeconds;
     }
 
     public void reactivateCustomer(Customer customer)
@@ -128,14 +122,14 @@ public class CustomerService {
         User user = userService.findByEmail(email);
         List<Address> address = user.getAddress();
         if (address.isEmpty())
-            throw new NoAddressFoundException("This customer does not have any Address");
+            throw new NoEntityFoundException("This customer does not have any Address");
         return address;
     }
-    public void updateDetails(CustomerTO customerTO)
+    public void updateDetails(CustomerUpdateTO customerTO)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
-        if (user.getEmail() != customerTO.getEmail())
+        if (customerTO.getEmail() != null)
             throw new CannotChangeException("You cannot change email");
         if (customerTO.getPassword() != null)
             throw new CannotChangeException("You cannot change Password\nTo change please hit /changePassword API");
@@ -146,7 +140,7 @@ public class CustomerService {
         if (customerTO.getLastName() !=null)
             user.setLastName(customerTO.getLastName());
         Customer customer = user.getCustomer();
-        customer.setContact(customerTO.getContact());
+        customer.setContact(customerTO.getPhoneNumber());
         userRepo.save(user);
         customerRepo.save(customer);
     }
@@ -181,7 +175,7 @@ public class CustomerService {
     }
 
     //change in address update
-    public Integer updateAddress(Long id,Address address)
+    public Integer updateAddress(Long id, AddressUpdateTO address)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
@@ -204,5 +198,15 @@ public class CustomerService {
             }
         }
         return 0;
+    }
+
+    public void resendActivationToken(String email) {
+        User user = userRepo.findByEmail(email);
+        if (user == null)
+            throw new NoEntityFoundException("User with this mail cannot be found\nPlease try again");
+        Customer customer = user.getCustomer();
+        if (customer == null)
+            throw new NoEntityFoundException("You are not a customer\nif you are seller please contact Admin for activation");
+        reactivateCustomer(customer);
     }
 }

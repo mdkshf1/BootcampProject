@@ -57,11 +57,11 @@ public class AuthorizationServerConfigurations extends AuthorizationServerConfig
         return new JdbcTokenStore(dataSource);
     }
 
-    @Bean
+/*    @Bean
     public JdbcTokenStore jdbctokenStore()
     {
         return new JdbcTokenStore(dataSource);
-    }
+    }*/
 
 
     @Override

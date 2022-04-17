@@ -1,7 +1,6 @@
 package com.bootcampproject.controllers;
 
-import com.bootcampproject.dto.SellerTO;
-import com.bootcampproject.dto.UpdatePasswordTO;
+import com.bootcampproject.dto.*;
 import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Product;
 import com.bootcampproject.entities.User;
@@ -35,11 +34,11 @@ public class SellerController
     @GetMapping("/profile")
     public ResponseEntity<?> getDetails()
     {
-        return new ResponseEntity<User>(sellerService.getDetails(),HttpStatus.OK);
+        return new ResponseEntity<AdminSellerResponseTO>(sellerService.getDetails(),HttpStatus.OK);
     }
 
-    @PutMapping("update")
-    public ResponseEntity<?> updateDetails(@Valid @RequestBody SellerTO seller, BindingResult result)
+    @PutMapping("/update")
+    public ResponseEntity<?> updateDetails(@Valid @RequestBody SellerUpdateTO seller, BindingResult result)
     {
         if (result.hasErrors())
         {
@@ -77,7 +76,7 @@ public class SellerController
     }
 
     @PutMapping("/updateAddress")
-    public ResponseEntity<?> updateAddress(@Valid @RequestBody Address address,BindingResult result)
+    public ResponseEntity<?> updateAddress(@Valid @RequestBody AddressUpdateTO address, BindingResult result)
     {
         if (result.hasErrors())
         {

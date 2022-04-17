@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface SellerRepo extends JpaRepository<Seller, Long> {
 
+    Seller findByUserId(Long id);
 }

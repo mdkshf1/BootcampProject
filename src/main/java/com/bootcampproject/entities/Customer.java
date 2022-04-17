@@ -2,6 +2,7 @@ package com.bootcampproject.entities;
 
 import lombok.*;
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +16,9 @@ public class Customer extends AuditingInfo implements Serializable {
 
     @Id
     private Long id;
-    @Size(min = 10, max = 10, message = "Enter 10 digits without +91")
+    /*@Size(min = 10, max = 10, message = "Enter 10 digits without +91")*/
+    /*@Digits(integer = 10,fraction = 0,message = "Invalid phone number")*/
+    @Size(min = 10,max = 10,message = "Enter 10 digits without +91")
     private String contact;
     @OneToOne
     @MapsId

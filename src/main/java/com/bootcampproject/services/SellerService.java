@@ -1,6 +1,9 @@
 package com.bootcampproject.services;
 
+import com.bootcampproject.dto.AddressUpdateTO;
+import com.bootcampproject.dto.AdminSellerResponseTO;
 import com.bootcampproject.dto.SellerTO;
+import com.bootcampproject.dto.SellerUpdateTO;
 import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.Seller;
@@ -67,26 +70,27 @@ public class SellerService {
         seller.setUser(user);
         user.setSeller(seller);
         System.out.println(seller);
+        System.out.println(address);
         customerService.commonMail();
         sellerRepo.save(seller);
         addressRepo.save(address);
         return sellerTO;
     }
 
-    public User getDetails()
+    public AdminSellerResponseTO getDetails()
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         Seller seller = user.getSeller();
-        return user;
+        return AdminSellerResponseTO.mapper(user);
     }
 
-    public void updateDetails(SellerTO sellerTO)
+    public void updateDetails(SellerUpdateTO sellerTO)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         Seller seller = user.getSeller();
-        if (user.getEmail() != sellerTO.getEmail())
+        if (sellerTO.getEmail() != null)
             throw new CannotChangeException("You cannot change email");
         if (sellerTO.getPassword() != null)
             throw new CannotChangeException("You cannot change Password\nTo change please hit /changePassword API");
@@ -113,7 +117,7 @@ public class SellerService {
         userService.changePassword(user,password);
     }
 
-    public void updateAddress(Address address1)
+    public void updateAddress(AddressUpdateTO address1)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);

@@ -1,10 +1,9 @@
 package com.bootcampproject.controllers;
 
-import com.bootcampproject.dto.CustomerResponseTO;
-import com.bootcampproject.dto.CustomerTO;
-import com.bootcampproject.dto.UpdatePasswordTO;
+import com.bootcampproject.dto.*;
 import com.bootcampproject.entities.Address;
 import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.exceptions.NoEntityFoundException;
 import com.bootcampproject.services.CustomerService;
 import com.bootcampproject.services.SellerService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,14 +37,21 @@ public class CustomerController {
     }
 
     @GetMapping("/address")
-    public ResponseEntity<?> getAddressDetails()
-    {
-        return new ResponseEntity<List<Address>>(customerService.getAddressDetails(),HttpStatus.OK);
+    public ResponseEntity<?> getAddressDetails() {
+        try {
+            return new ResponseEntity<List<Address>>(customerService.getAddressDetails(), HttpStatus.OK);
+        }catch (NoEntityFoundException e)
+        {
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e)
+        {
+            return new ResponseEntity<String>("Exception occurred while viewing address",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     //Change it to a new transferable object
     @PutMapping("/update")
-    public ResponseEntity<?> updateDetails(@Valid @RequestBody CustomerTO customerTO, BindingResult result)
+    public ResponseEntity<?> updateDetails(@Valid @RequestBody CustomerUpdateTO customerTO, BindingResult result)
     {
         if (result.hasErrors())
         {
@@ -81,7 +87,7 @@ public class CustomerController {
         sellerService.updatePassword(updatePasswordTO.getPassword());
         return new ResponseEntity<String>("Password changed Successfully",HttpStatus.OK);
     }
-    @PostMapping("addAddress")
+    @PostMapping("/addAddress")
     public ResponseEntity<?> addAddress(@Valid @RequestBody Address address,BindingResult result)
     {
         if (result.hasErrors())
@@ -93,7 +99,7 @@ public class CustomerController {
         customerService.addAddress(address);
         return new ResponseEntity<String>("Address updated",HttpStatus.OK);
     }
-    @DeleteMapping("deleteAddress/{id}")
+    @DeleteMapping("/deleteAddress/{id}")
     public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id)
     {
        Integer flag = customerService.deleteAddress(id);
@@ -103,7 +109,7 @@ public class CustomerController {
     }
 
     @PutMapping("/updateAddress/{id}")
-    public ResponseEntity<?> updateAddress(@PathVariable("id")Long id,@Valid @RequestBody Address address)
+    public ResponseEntity<?> updateAddress(@PathVariable("id")Long id,@Valid @RequestBody AddressUpdateTO address)
     {
         Integer flag = customerService.updateAddress(id,address);
         if (flag == 0)
