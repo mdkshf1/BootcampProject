@@ -1,6 +1,5 @@
 package com.bootcampproject.entities;
 
-
 import javax.persistence.*;
 
 @Entity
@@ -13,6 +12,8 @@ public class ProductReview extends AuditingInfo{
     @Id
     @ManyToOne
     private Product products;
+
     private String reviews;
+
     private Integer rating;
 }

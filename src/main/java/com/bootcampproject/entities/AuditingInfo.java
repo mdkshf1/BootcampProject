@@ -1,7 +1,6 @@
 package com.bootcampproject.entities;
 
 import lombok.*;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,7 +13,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditingInfo {

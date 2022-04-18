@@ -9,7 +9,7 @@ import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Customer;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.User;
-import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.exceptions.DataNotUpdatedException;
 import com.bootcampproject.exceptions.NoEntityFoundException;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
 import com.bootcampproject.repositories.AddressRepo;
@@ -121,8 +121,6 @@ public class CustomerService {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         List<Address> address = user.getAddress();
-        if (address.isEmpty())
-            throw new NoEntityFoundException("This customer does not have any Address");
         return address;
     }
     public void updateDetails(CustomerUpdateTO customerTO)
@@ -130,9 +128,9 @@ public class CustomerService {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         if (customerTO.getEmail() != null)
-            throw new CannotChangeException("You cannot change email");
+            throw new DataNotUpdatedException("You cannot change email");
         if (customerTO.getPassword() != null)
-            throw new CannotChangeException("You cannot change Password\nTo change please hit /changePassword API");
+            throw new DataNotUpdatedException("You cannot change Password\nTo change please hit /changePassword API");
         if (customerTO.getFirstName() != null)
             user.setFirstName(customerTO.getFirstName());
         if (customerTO.getMiddleName() != null)
@@ -164,17 +162,12 @@ public class CustomerService {
                 log.info("Address found");
                 address.setDeleted(true);
                 addressRepo.save(address);
-                user.setAddress(addressList);
-                userRepo.save(user);
                 return 0;
             }
         }
         log.info("Address not found");
-        /*addressList = addressList.stream().map(address ->{ if (address.getId()==id)address.setDeleted(true);return 0;}).collect(Collectors.toCollection());*/
         return 1;
     }
-
-    //change in address update
     public Integer updateAddress(Long id, AddressUpdateTO address)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();

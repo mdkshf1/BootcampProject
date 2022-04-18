@@ -33,7 +33,6 @@ public class SellerTO extends UserTO {
     @NotNull(message = "Company Name could not be null")
     @NotBlank(message = "Company name could not be blank")
     private String companyName;
-
     private Address address;
 
     public static Seller mapper(SellerTO sellerTO,User user)

@@ -32,6 +32,7 @@ public class AdminSellerResponseTO {
         response.setIsActive(user.isActive());
         response.setCompanyName(seller.getCompanyName());
         response.setCompanyContact(seller.getCompanyContact());
+        sellerAddress.setId(address1.getId());
         sellerAddress.setCity(address1.getCity());
         sellerAddress.setState(address1.getState());
         sellerAddress.setCountry(address1.getCountry());

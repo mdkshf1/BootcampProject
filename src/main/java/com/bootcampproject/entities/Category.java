@@ -1,24 +1,34 @@
 package com.bootcampproject.entities;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
-
 @Entity
-@Data
-public class Category extends AuditingInfo {
+@Getter
+@Setter
+@NoArgsConstructor
+public class Category extends AuditingInfo implements Serializable {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade ={CascadeType.ALL})
     @JoinColumn(name = "parentCategoryId")
     private Category parentCategory;
 
+    @NotNull(message = "Category Name cannot be Null")
+    @NotBlank(message = "Category Cannot be Blank")
     private String name;
 
-    @OneToOne(mappedBy = "category")
-    private Product product;
+    @OneToMany(mappedBy = "category")
+    private List<Product> product;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<CategoryMetadataFieldValues> categoryMetadataFieldValues;
 }

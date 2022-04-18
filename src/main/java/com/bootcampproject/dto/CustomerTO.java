@@ -3,6 +3,8 @@ package com.bootcampproject.dto;
 import com.bootcampproject.entities.Customer;
 import lombok.Data;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -13,12 +15,10 @@ import java.util.UUID;
 public class CustomerTO extends UserTO{
 
     private Long id;
-
     @Pattern(regexp = "(^$|[0-9]{10})",message = "Enter phone number in correct format")
     private String phoneNumber;
-
+    @Temporal(TemporalType.TIMESTAMP)
     private Date activationTokenAt;
-
     private String activationToken;
 
     public static Customer createCustomer(CustomerTO customerTO)

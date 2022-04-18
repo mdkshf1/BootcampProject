@@ -8,7 +8,8 @@ import com.bootcampproject.entities.Address;
 import com.bootcampproject.entities.Role;
 import com.bootcampproject.entities.Seller;
 import com.bootcampproject.entities.User;
-import com.bootcampproject.exceptions.CannotChangeException;
+import com.bootcampproject.exceptions.DataNotUpdatedException;
+import com.bootcampproject.exceptions.EntityNotFoundException;
 import com.bootcampproject.exceptions.UserAlreadyExistException;
 import com.bootcampproject.repositories.AddressRepo;
 import com.bootcampproject.repositories.RoleRepo;
@@ -81,19 +82,17 @@ public class SellerService {
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
-        Seller seller = user.getSeller();
         return AdminSellerResponseTO.mapper(user);
     }
-
     public void updateDetails(SellerUpdateTO sellerTO)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
         Seller seller = user.getSeller();
         if (sellerTO.getEmail() != null)
-            throw new CannotChangeException("You cannot change email");
+            throw new DataNotUpdatedException("You cannot change email");
         if (sellerTO.getPassword() != null)
-            throw new CannotChangeException("You cannot change Password\nTo change please hit /changePassword API");
+            throw new DataNotUpdatedException("You cannot change Password\nTo change please hit /changePassword API");
         if (sellerTO.getFirstName() != null)
             user.setFirstName(sellerTO.getFirstName());
         if (sellerTO.getMiddleName() != null)
@@ -117,11 +116,13 @@ public class SellerService {
         userService.changePassword(user,password);
     }
 
-    public void updateAddress(AddressUpdateTO address1)
+    public void updateAddress(AddressUpdateTO address1,Long id)
     {
         String email = SecurityContextHolderUtil.getCurrentUserEmail();
         User user = userService.findByEmail(email);
-        Address address = user.getAddress().get(0);
+        Address address =user.getAddress().stream().filter(existingaddress -> existingaddress.getId().equals(id)).findFirst().orElse(null);
+        if (address == null)
+            throw new EntityNotFoundException("Address with this id cannot be found");
         if (address1.getCity() != null)
             address.setCity(address1.getCity());
         if (address1.getState() != null)
@@ -134,9 +135,6 @@ public class SellerService {
             address.setLabel(address1.getLabel());
         if (address1.getZipCode() != null)
             address.setZipCode(address1.getZipCode());
-        List<Address> addressList = new ArrayList<>();
-        addressList.add(address);
-        user.setAddress(addressList);
-        userRepo.save(user);
+        addressRepo.save(address);
     }
 }

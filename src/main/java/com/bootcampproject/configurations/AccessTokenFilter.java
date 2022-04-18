@@ -47,8 +47,6 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-//401 : not valid email and pwd
-
             User user = userService.findByEmail(username);
 
             if (user == null) {

@@ -28,9 +28,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserTO {
 
-    @Autowired
-    private static PasswordEncoder passwordEncoder;
-
     @Column(unique = true)
     @NotNull
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",message = "Enter mail in correct format or invalid mail")
@@ -43,7 +40,7 @@ public class UserTO {
     private String lastName;
     @NotNull
     @Size(min = 8, max = 15,message = "Password should be of 8 to 15 characters long")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have at least 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
     private String password;
     @NotNull
     private String confirmPassword;

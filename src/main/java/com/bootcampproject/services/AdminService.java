@@ -87,14 +87,14 @@ public class AdminService {
     {
         List<AdminCustomerResponseTO> customers = new ArrayList<>();
         Page<Customer> customerPage= customerRepo.findAll(pageable);
-        List<Customer> customerList = customerPage.getContent();
-        if (customerList.isEmpty())
-            throw new EntityNotFoundException("There is no user present");
-        customerList.stream().forEach(customer -> {
-            User user = customer.getUser();
-            AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
-            customers.add(adminCustomerResponseTO);
-        });
+        if (customerPage.hasContent())
+        {
+            customerPage.getContent().forEach(customer -> {
+                User user = customer.getUser();
+                AdminCustomerResponseTO adminCustomerResponseTO = AdminCustomerResponseTO.getCustomer(user);
+                customers.add(adminCustomerResponseTO);
+            });
+        }
         return customers;
     }
 
@@ -106,27 +106,32 @@ public class AdminService {
             throw new EntityNotFoundException("Seller with "+email+" is not found");
         return AdminSellerResponseTO.mapper(user);
     }
-    public Page<SellerResponseTO> findAllSellers(Pageable pageable)
+    public List<AdminSellerResponseTO> findAllSellers(Pageable pageable)
     {
-        List<SellerResponseTO> sellerResponseTOList = new ArrayList<>();
-        List<Seller> sellerList = sellerRepo.findAll();
-        if (sellerList.isEmpty())
-            throw new EntityNotFoundException("There is no user found");
-        for (Seller seller:sellerList
-             ) {
-            User user = seller.getUser();
-            SellerResponseTO sellerResponseTO = SellerResponseTO.getSeller(seller,user);
-            sellerResponseTOList.add(sellerResponseTO);
+        List<AdminSellerResponseTO> sellers = new ArrayList<>();
+        int x=0;
+        int y=10/x;
+        Page<Seller> sellerPage = sellerRepo.findAll(pageable);
+        if (sellerPage.hasContent()) {
+            sellerPage.getContent().forEach(seller -> {
+                User user = seller.getUser();
+                AdminSellerResponseTO adminSellerResponseTO = AdminSellerResponseTO.mapper(user);
+                sellers.add(adminSellerResponseTO);
+                    });
         }
-        return (Page<SellerResponseTO>) sellerResponseTOList;
+        return sellers;
     }
 
     public String activateOrDeactivateSeller(Long user_id,Boolean active)
     {
         Seller seller = sellerRepo.findByUserId(user_id);
         if (seller == null)
-            throw new EntityNotFoundException("Customer with this id cannot be found");
+            throw new EntityNotFoundException("Seller with this id cannot be found");
         User user = seller.getUser();
+        if (user.isActive() == true && active == true)
+            return "Account already activated";
+        else if (user.isActive() == false && active == false)
+            return "Account already deactivated";
         user.setActive(active);
         userRepo.save(user);
         if (user.isActive())
@@ -146,16 +151,20 @@ public class AdminService {
         if (customer == null)
             throw new EntityNotFoundException("Customer with this id cannot be found");
         User user = customer.getUser();
+        if (user.isActive() == true && active == true)
+            return "Account already activated";
+        else if (user.isActive() == false && active == false)
+            return "Account already deactivated";
         user.setActive(active);
         userRepo.save(user);
         if (user.isActive())
         {
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got deactivated by admin\nfor help contact admin");
-            return "Customer was active and now deactivated";
+            return "Customer was deactivated and now activated";
         }
         else{
             simpleMail(user.getEmail(),"Info about account","This is to inform that your account got activated by admin\nEnjoy being with us");
-            return "Customer was deactivated and now activated";
+            return "Customer was activated and now deactivated";
         }
     }
     public String lockOrUnlockUser(Long user_id,Boolean lock)
@@ -163,6 +172,10 @@ public class AdminService {
         User user = userRepo.getById(user_id);
         if (user == null)
             throw new EntityNotFoundException("User with this userid cannot be found");
+        if (user.isLocked() == true && lock == true)
+            return "User Already locked";
+        else if (user.isLocked() == false && lock == false)
+            return "User already unlocked";
         user.setLocked(lock);
         userRepo.save(user);
         if (user.isLocked())

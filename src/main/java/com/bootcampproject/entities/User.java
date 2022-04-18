@@ -7,12 +7,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.*;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Entity
 @Table(name = "User",uniqueConstraints = @UniqueConstraint(columnNames = {"id","email"}))
 @NoArgsConstructor
@@ -25,10 +26,14 @@ public class User extends AuditingInfo implements UserDetails {
     @Column(unique = true,nullable = false)
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
     private String email;
-    @NonNull
+    @NotNull(message = "firstname cannot be null")
+    @NotBlank(message = "Firstname cannot be Blank")
     @Column(nullable = false)
     private String firstName;
     private String middleName;
+    @NotNull(message = "Lastname cannot be null")
+    @NotBlank(message = "Lastname cannot be Blank")
+    @Column(nullable = false)
     private String lastName;
     private String password;
     private boolean isDeleted = false;
@@ -36,7 +41,7 @@ public class User extends AuditingInfo implements UserDetails {
     private boolean isExpired = false;
     private boolean isLocked = false;
     private Integer invalidAttemptCount = 0;
-    //manually change krna hai
+    @Temporal(TemporalType.TIMESTAMP)
     private Date passwordUpdateDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> address;
@@ -46,20 +51,11 @@ public class User extends AuditingInfo implements UserDetails {
     private Seller seller;
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
     private Set<Role> roles;
-
     @Transient
     private List<GrantedAuthority> grantedAuthorities;
-
     private String forgotPasswordToken;
-
+    @Temporal(TemporalType.TIMESTAMP)
     private Date forgotPasswordAt;
-
-
-    public User(User user) {
-        this.password = user.getPassword();
-        this.email = user.getEmail();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return grantedAuthorities;
@@ -89,7 +85,6 @@ public class User extends AuditingInfo implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 
     public static User create(UserTO userTO)
     {

@@ -20,13 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class LogoutController {
-
-
-
     @Autowired
     private UserService userService;
-
-
+//<<<<<<<<<<<<<<<<-----------------------Logout API--------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     @PostMapping("/doLogout")
     public ResponseEntity<?> logOut(HttpServletRequest request) throws ServletException {
         try {

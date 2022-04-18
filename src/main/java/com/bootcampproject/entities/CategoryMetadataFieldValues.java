@@ -1,11 +1,13 @@
 package com.bootcampproject.entities;
 
-import lombok.Data;
+import lombok.*;
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @IdClass(CategoryMetadataFieldValuesPK.class)
 public class CategoryMetadataFieldValues extends AuditingInfo{
 
@@ -17,6 +19,7 @@ public class CategoryMetadataFieldValues extends AuditingInfo{
     @ManyToOne
     private Category category;
 
-    private String categoryValues;
+    @ElementCollection
+    private Set<String> categoryValues;
 
 }

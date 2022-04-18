@@ -3,11 +3,11 @@ package com.bootcampproject.entities;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
 
 @Data
 @Entity
@@ -15,19 +15,20 @@ import java.util.List;
 public class Customer extends AuditingInfo implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    /*@Size(min = 10, max = 10, message = "Enter 10 digits without +91")*/
-    /*@Digits(integer = 10,fraction = 0,message = "Invalid phone number")*/
     @Size(min = 10,max = 10,message = "Enter 10 digits without +91")
+    @Positive(message = "Phone Number cannot be negative")
     private String contact;
     @OneToOne
     @MapsId
     private User user;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Date activationTokenAt;
+
     private String activationToken;
 
-    /*@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)*/
     @Transient
     private List<Address> addressList;
 
@@ -36,14 +37,4 @@ public class Customer extends AuditingInfo implements Serializable {
 
     @OneToMany(mappedBy = "customer")
     private List<Orders> orders;
-
-/*    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
-    private ProductReview productReview;
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
-    private Cart cart;*/
-
-/*
-    @OneToOne(mappedBy = "customer")
-    private Cart cart;*/
 }

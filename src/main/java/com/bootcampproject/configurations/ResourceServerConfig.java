@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     @EnableWebSecurity
     @EnableGlobalMethodSecurity(prePostEnabled = true) // pre authorize tbi work krti h.. is annotation ki help se
     public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-
         @Autowired
         private AccessTokenFilter accessTokenFilter;
         @Autowired

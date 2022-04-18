@@ -49,9 +49,14 @@ public class PublicController {
     @Autowired
     private CustomerService customerService;
 
-
     @Autowired
     private SellerService sellerService;
+
+
+//<<<<<<<<<<<<--------------------------------------------Registration API's ------------------------------------------->>>>>>>>>>>>
+
+
+
     @PostMapping("/register/seller")
     public ResponseEntity<?> createSeller(@Valid @RequestBody SellerTO sellerTO,BindingResult result)
     {
@@ -136,6 +141,9 @@ public class PublicController {
         }
     }
 
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<-----------------------Activation and Password APIs-------------------------------->>>>>>>>>>>>>>>>>>>>>>>>
+
     @GetMapping("/activate/{token}")
     public ResponseEntity<?> activateUser( @PathVariable("token") String token) {
         Customer customer = customerService.findByActivationToken(token);
@@ -185,17 +193,6 @@ public class PublicController {
         return new ResponseEntity<String>("Password changed Successfully",HttpStatus.OK);
     }
 
-    @GetMapping("/i18n")
-    public String i18n()
-    {
-        return messageSource.getMessage("good.morning.message",null,LocaleContextHolder.getLocale());
-    }
-
-    @GetMapping("/currentUser")
-    public String currentUser(@CurrentSecurityContext(expression = "authentication.name")String username)
-    {
-        return SecurityContextHolderUtil.getCurrentUserEmail();
-    }
 
     @PostMapping("/resendtoken")
     public ResponseEntity<?> resendActivationToken(@RequestParam(name = "email")String email)
@@ -212,5 +209,17 @@ public class PublicController {
         {
             return new ResponseEntity<String>("Error while reactivating Customer",HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @GetMapping("/i18n")
+    public String i18n()
+    {
+        return messageSource.getMessage("good.morning.message",null,LocaleContextHolder.getLocale());
+    }
+
+    @GetMapping("/currentUser")
+    public String currentUser(@CurrentSecurityContext(expression = "authentication.name")String username)
+    {
+        String str = messageSource.getMessage("Hello.good",null,LocaleContextHolder.getLocale());
+        return str;
     }
 }

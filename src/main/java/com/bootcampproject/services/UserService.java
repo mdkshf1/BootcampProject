@@ -12,6 +12,7 @@ import com.bootcampproject.exceptions.UserNotActivatedException;
 import com.bootcampproject.repositories.RoleRepo;
 import com.bootcampproject.repositories.SellerRepo;
 import com.bootcampproject.repositories.UserRepo;
+import com.bootcampproject.utils.CommonUtils;
 import com.bootcampproject.utils.SecurityContextHolderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,11 +100,21 @@ public class UserService {
 
     public User changePassword(User user,String password)
     {
-        user.setPassword(passwordEncoder.encode(password));
-        String subject = "Your Password has been updated";
-        String body = "As your password has been updated now you can login with your new password";
-        simpleMailService.sendMail(user.getEmail(),subject,body);
-        return userRepo.save(user);
+       Boolean b =  CommonUtils.validateToken(user.getPasswordUpdateDate(),new Date(),15l);
+       if (b) {
+           user.setPassword(passwordEncoder.encode(password));
+           String subject = "Your Password has been updated";
+           String body = "As your password has been updated now you can login with your new password";
+           simpleMailService.sendMail(user.getEmail(), subject, body);
+           return userRepo.save(user);
+       }
+       else
+       {
+           String subject = "Time is Up for changing password";
+           String body = "Your time slot of 15 minutes is finished now you have to again hit the forgot password APi";
+           simpleMailService.sendMail(user.getEmail(),subject,body);
+           return null;
+       }
     }
 
     public String logOut(String token)

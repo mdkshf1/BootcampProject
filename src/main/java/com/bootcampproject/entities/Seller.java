@@ -16,6 +16,7 @@ import java.util.List;
 @Table(name = "Seller")
 public class Seller extends AuditingInfo implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     @Size(min = 15, max = 15, message = "Invalid GST number")
@@ -27,7 +28,8 @@ public class Seller extends AuditingInfo implements Serializable {
     @OneToOne
     @MapsId
     private User user;
-
+    @Transient
+    private Address address;
     @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "seller")
     private List<Product> products;
 }

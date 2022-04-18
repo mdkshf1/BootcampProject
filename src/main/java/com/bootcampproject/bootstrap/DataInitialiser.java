@@ -21,7 +21,6 @@ import static com.bootcampproject.constants.AppConstant.*;
 @Component
 @Slf4j
 public class DataInitialiser implements ApplicationRunner {
-
     @Autowired
     private RoleService roleService;
 
@@ -46,14 +45,7 @@ public class DataInitialiser implements ApplicationRunner {
             roleService.save(ROLE_SELLER);
         if (roleService.check(ROLE_CUSTOMER) == 0)
             roleService.save(ROLE_CUSTOMER);
-
         List<User> userList = userRepo.findAll();
-
-        System.out.println("List found for users is "+ userList);
-
-
-        // Admin role is not setting
-
           if (userList.isEmpty()) {
             UserTO user = new UserTO();
             user.setEmail("admin@gmail.com");

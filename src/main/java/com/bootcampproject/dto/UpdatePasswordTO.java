@@ -9,7 +9,10 @@ import javax.validation.constraints.Size;
 public class UpdatePasswordTO {
 
     @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have atleast 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have at least 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
     private String password;
+
+    @Size(min = 8, max = 15, message = "Password should have 8 to 15 characters")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",message = "Password should have at least 1 upper-case letter, 1 lower case letter, 1 special character and 1 number")
     private String confirmPassword;
 }

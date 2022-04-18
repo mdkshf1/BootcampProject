@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 @EnableAuthorizationServer
 public class AuthorizationServerConfigurations extends AuthorizationServerConfigurerAdapter {
 
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -56,12 +55,6 @@ public class AuthorizationServerConfigurations extends AuthorizationServerConfig
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }
-
-/*    @Bean
-    public JdbcTokenStore jdbctokenStore()
-    {
-        return new JdbcTokenStore(dataSource);
-    }*/
 
 
     @Override
